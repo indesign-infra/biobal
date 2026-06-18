@@ -1,9 +1,19 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "qwik-project-name",
-  "short_name": "Welcome to Qwik",
-  "start_url": ".",
+  "name": "BioBal — Espacio Integral de Salud",
+  "short_name": "BioBal",
+  "description": "Alquiler de consultorios profesionales en Small Center Las Piedras, Buenos Aires.",
+  "lang": "es-AR",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#fff",
-  "description": "A Qwik project app."
+  "background_color": "#ffffff",
+  "theme_color": "#0e2a47",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
 }

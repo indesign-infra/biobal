@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   BioBal — Design tokens (Tailwind v4 @theme)
+   Sector salud premium: azul petróleo confiable + teal clínico, mucho aire.
+   ============================================================================ */
+@theme {
+  /* Tipografía */
+  --font-sans:
+    "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  --font-display:
+    "Sora", "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    sans-serif;
+
+  /* Primario — azul petróleo profundo (confianza / profesionalismo) */
+  --color-primary-50: #eff5fa;
+  --color-primary-100: #dbe8f2;
+  --color-primary-200: #bcd2e6;
+  --color-primary-300: #8fb2d2;
+  --color-primary-400: #5d8bb5;
+  --color-primary-500: #1e4d6b;
+  --color-primary-600: #163d57;
+  --color-primary-700: #0e2a47;
+  --color-primary-800: #0b2139;
+  --color-primary-900: #08182a;
+  --color-primary-950: #050f1b;
+
+  /* Acento — teal/verde-agua clínico y fresco (CTAs y detalles) */
+  --color-accent-50: #e9faf8;
+  --color-accent-100: #c6f2ee;
+  --color-accent-200: #93e5df;
+  --color-accent-300: #58d2ca;
+  --color-accent-400: #3aafa9;
+  --color-accent-500: #17b0a7;
+  --color-accent-600: #0e8d86;
+  --color-accent-700: #11716c;
+  --color-accent-800: #135a57;
+  --color-accent-900: #144a48;
+  --color-accent-950: #042c2b;
+
+  /* Neutros y superficies */
+  --color-surface: #f7f9fb;
+  --color-surface-2: #eef2f7;
+  --color-line: #e3e8ef;
+  --color-ink: #3a4250;
+  --color-ink-strong: #1f2733;
+  --color-ink-soft: #6b7480;
+
+  /* Estados (sobrios) */
+  --color-success: #15876b;
+  --color-success-soft: #e7f5f0;
+  --color-error: #c4453a;
+  --color-error-soft: #fcecea;
+
+  /* Sombras suaves para cards */
+  --shadow-card:
+    0 1px 2px rgba(8, 24, 42, 0.04), 0 8px 24px -12px rgba(8, 24, 42, 0.18);
+  --shadow-card-hover:
+    0 4px 12px rgba(8, 24, 42, 0.08), 0 18px 40px -16px rgba(8, 24, 42, 0.28);
+}
+
+/* =============================================================================
+   Base
+   ============================================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* offset para que las anclas no queden tapadas por el header sticky */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply text-ink bg-white font-sans antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display text-primary-900;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Foco visible y accesible en toda la página */
+  :focus-visible {
+    @apply ring-accent-500/70 ring-2 ring-offset-2 ring-offset-white outline-none;
+    border-radius: 0.375rem;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-accent-500) 22%, white);
+    color: var(--color-primary-900);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
