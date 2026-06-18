@@ -2,6 +2,7 @@ import { component$, Slot } from "@builder.io/qwik";
 import { useLocation } from "@builder.io/qwik-city";
 import { Header } from "~/components/layout/header";
 import { Footer } from "~/components/layout/footer";
+import { Chatbot } from "~/components/chatbot/chatbot";
 
 export default component$(() => {
   const location = useLocation();
@@ -19,6 +20,7 @@ export default component$(() => {
         <Slot />
       </main>
       <Footer />
+      <Chatbot />
     </>
   );
 });
