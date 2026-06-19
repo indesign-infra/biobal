@@ -4,22 +4,32 @@ import type { RequestHandler } from "@builder.io/qwik-city";
 import { getDb } from "~/db";
 import { users } from "~/db/schema";
 import { eq } from "drizzle-orm";
+import { verifySessionToken, SESSION_COOKIE } from "~/lib/auth";
 import {
   LuLayoutDashboard,
   LuInbox,
   LuMessageSquare,
   LuClapperboard,
+  LuImage,
   LuInstagram,
+  LuLayoutPanelTop,
+  LuBuilding2,
+  LuShieldCheck,
   LuLogOut,
 } from "@qwikest/icons/lucide";
 
 // Barrera de seguridad: corre en el servidor antes de renderizar.
-export const onRequest: RequestHandler = async ({ cookie, url, redirect }) => {
+// Valida la firma HMAC de la cookie (no se puede falsificar sin AUTH_SECRET).
+export const onRequest: RequestHandler = async ({
+  cookie,
+  url,
+  redirect,
+  env,
+}) => {
   const currentPath = url.pathname.replace(/\/$/, "");
   const isLoginPage = currentPath === "/admin/login";
-  const sessionCookie = cookie.get("auth_session");
-  const hasValidSession =
-    sessionCookie && sessionCookie.value && !isNaN(Number(sessionCookie.value));
+  const userId = await verifySessionToken(env, cookie.get(SESSION_COOKIE)?.value);
+  const hasValidSession = userId !== null;
 
   if (!hasValidSession && !isLoginPage) {
     throw redirect(302, "/admin/login/");
@@ -30,14 +40,14 @@ export const onRequest: RequestHandler = async ({ cookie, url, redirect }) => {
 };
 
 export const useAdminUser = routeLoader$(async ({ cookie, env }) => {
-  const userIdStr = cookie.get("auth_session")?.value;
-  if (!userIdStr || isNaN(Number(userIdStr))) return null;
+  const userId = await verifySessionToken(env, cookie.get(SESSION_COOKIE)?.value);
+  if (userId === null) return null;
   try {
     const db = getDb(env);
     const [user] = await db
       .select({ username: users.username })
       .from(users)
-      .where(eq(users.id, Number(userIdStr)));
+      .where(eq(users.id, userId));
     return user ? user.username : null;
   } catch (error) {
     console.error("Error in useAdminUser:", error);
@@ -47,10 +57,22 @@ export const useAdminUser = routeLoader$(async ({ cookie, env }) => {
 
 const navLinks = [
   { href: "/admin", label: "Dashboard", Icon: LuLayoutDashboard },
+  {
+    href: "/admin/secciones",
+    label: "Secciones y contenido",
+    Icon: LuLayoutPanelTop,
+  },
+  { href: "/admin/negocio", label: "Datos del negocio", Icon: LuBuilding2 },
   { href: "/admin/leads", label: "Leads recibidos", Icon: LuInbox },
   { href: "/admin/chats", label: "Chatbot IA", Icon: LuMessageSquare },
   { href: "/admin/videos-verticales", label: "Reels", Icon: LuClapperboard },
+  { href: "/admin/galeria", label: "Galería", Icon: LuImage },
   { href: "/admin/instagram", label: "Instagram", Icon: LuInstagram },
+  {
+    href: "/admin/administradores",
+    label: "Administradores",
+    Icon: LuShieldCheck,
+  },
 ];
 
 export default component$(() => {

@@ -3,13 +3,14 @@ import { LuMenu, LuX } from "@qwikest/icons/lucide";
 import { Container } from "../ui/container";
 import { Button } from "../ui/button";
 import { Brand } from "./brand";
-import { navLinks } from "~/lib/site";
+import { useNavSections } from "~/routes/layout";
 
 /**
  * Header sticky con navegación ancla (scroll suave vía CSS) y CTA destacado.
  * El fondo se intensifica levemente al hacer scroll. Incluye menú mobile.
  */
 export const Header = component$(() => {
+  const navLinks = useNavSections();
   const scrolled = useSignal(false);
   const menuOpen = useSignal(false);
 
@@ -43,7 +44,7 @@ export const Header = component$(() => {
         </a>
 
         <nav class="hidden items-center gap-0.5 lg:flex" aria-label="Principal">
-          {navLinks.map((link) => (
+          {navLinks.value.map((link) => (
             <a
               key={link.href}
               href={link.href}
@@ -78,7 +79,7 @@ export const Header = component$(() => {
       {menuOpen.value && (
         <div id="mobile-menu" class="border-line border-t bg-white lg:hidden">
           <Container class="flex flex-col gap-1 py-4">
-            {navLinks.map((link) => (
+            {navLinks.value.map((link) => (
               <a
                 key={link.href}
                 href={link.href}

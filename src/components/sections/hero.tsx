@@ -3,8 +3,24 @@ import { LuMapPin, LuArrowRight } from "@qwikest/icons/lucide";
 import { Container } from "../ui/container";
 import { Button } from "../ui/button";
 import { ImagePlaceholder } from "../ui/image-placeholder";
+import { type SectionContent, orDefault } from "~/lib/content";
 
-export const Hero = component$(() => {
+export const Hero = component$<{ content?: SectionContent }>(({ content }) => {
+  const eyebrow = orDefault(
+    content?.eyebrow,
+    "Small Center Las Piedras · Buenos Aires",
+  );
+  const title = orDefault(content?.title, "BioBal — Espacio Integral de Salud");
+  const subtitle = orDefault(
+    content?.subtitle,
+    "Un entorno diseñado para el crecimiento profesional y la excelencia en la atención.",
+  );
+  const body = orDefault(
+    content?.body,
+    "Espacio integral de salud en el complejo Small Center Las Piedras, Buenos Aires. Infraestructura de calidad, servicios especializados y espacios pensados para que los profesionales de la salud trabajen en las mejores condiciones.",
+  );
+  const image = orDefault(content?.imageUrl, "/images/consultorio.jpg");
+
   return (
     <section class="from-primary-950 via-primary-900 to-primary-800 relative overflow-hidden bg-linear-160">
       {/* Glows decorativos */}
@@ -19,23 +35,19 @@ export const Hero = component$(() => {
         <div>
           <span class="text-accent-200 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium ring-1 ring-white/15 backdrop-blur ring-inset">
             <LuMapPin class="h-4 w-4" />
-            Small Center Las Piedras · Buenos Aires
+            {eyebrow}
           </span>
 
           <h1 class="font-display mt-6 text-4xl leading-[1.08] font-bold tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
-            BioBal — Espacio Integral de Salud
+            {title}
           </h1>
 
           <p class="text-accent-100 mt-5 max-w-xl text-lg font-medium sm:text-xl">
-            Un entorno diseñado para el crecimiento profesional y la excelencia
-            en la atención.
+            {subtitle}
           </p>
 
           <p class="text-primary-100/85 mt-5 max-w-xl text-base leading-relaxed">
-            Espacio integral de salud en el complejo Small Center Las Piedras,
-            Buenos Aires. Infraestructura de calidad, servicios especializados y
-            espacios pensados para que los profesionales de la salud trabajen en
-            las mejores condiciones.
+            {body}
           </p>
 
           <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -52,7 +64,7 @@ export const Hero = component$(() => {
         <div class="relative">
           <ImagePlaceholder
             alt="Consultorio profesional de BioBal con amplio ventanal y vista al entorno verde, en Small Center Las Piedras"
-            src="/images/consultorio.jpg"
+            src={image}
             ratio="4 / 5"
             width={1200}
             height={1600}

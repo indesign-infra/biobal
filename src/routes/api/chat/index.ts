@@ -3,6 +3,10 @@ import { getDb, schema } from "~/db";
 import { nanoid } from "nanoid";
 import { eq } from "drizzle-orm";
 import OpenAI from "openai";
+import { rateLimit, clientIp } from "~/lib/rate-limit";
+
+const MAX_MESSAGES = 16;
+const MAX_CONTENT_LEN = 2000;
 
 // Respuestas por palabras clave (fallback si no hay OPENAI_API_KEY).
 function getFallback(userMessage: string): string {
@@ -92,6 +96,14 @@ function getFallback(userMessage: string): string {
 
 export const onPost: RequestHandler = async ({ request, json, env }) => {
   try {
+    // Rate limit: 12 mensajes/min por IP (anti-abuso de costo de OpenAI y DB).
+    if (!rateLimit(`chat:${clientIp(request)}`, 12, 60 * 1000)) {
+      json(429, {
+        error: "Estás enviando mensajes muy rápido. Esperá unos segundos.",
+      });
+      return;
+    }
+
     const body = await request.json();
     const { messages, sessionId } = body;
 
@@ -99,7 +111,32 @@ export const onPost: RequestHandler = async ({ request, json, env }) => {
       json(400, { error: "Faltan campos requeridos: messages y sessionId" });
       return;
     }
-    const lastUserMessage = messages[messages.length - 1];
+    // Validación de entrada: tamaños acotados y sessionId con forma esperada.
+    if (
+      typeof sessionId !== "string" ||
+      sessionId.length > 80 ||
+      !/^sess-[A-Za-z0-9]+$/.test(sessionId)
+    ) {
+      json(400, { error: "sessionId inválido" });
+      return;
+    }
+    if (messages.length === 0 || messages.length > MAX_MESSAGES) {
+      json(400, { error: "Cantidad de mensajes fuera de rango" });
+      return;
+    }
+    // Normalizamos: descartamos roles 'system' entrantes y recortamos contenido.
+    const safeMessages = messages
+      .filter(
+        (m: { role?: string; content?: string }) =>
+          (m?.role === "user" || m?.role === "assistant") &&
+          typeof m.content === "string",
+      )
+      .map((m: { role: string; content: string }) => ({
+        role: m.role as "user" | "assistant",
+        content: m.content.slice(0, MAX_CONTENT_LEN),
+      }));
+
+    const lastUserMessage = safeMessages[safeMessages.length - 1];
     if (!lastUserMessage || lastUserMessage.role !== "user") {
       json(400, { error: "El último mensaje debe ser del usuario" });
       return;
@@ -176,10 +213,8 @@ ${settings?.cta || "Para coordinar una visita o más información, escribinos po
           model: "gpt-4o-mini",
           messages: [
             { role: "system", content: systemPrompt },
-            ...messages.map((m: { role: string; content: string }) => ({
-              role: (m.role === "assistant" ? "assistant" : "user") as
-                | "assistant"
-                | "user",
+            ...safeMessages.map((m) => ({
+              role: m.role,
               content: m.content || "",
             })),
           ],

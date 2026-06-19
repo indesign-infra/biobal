@@ -10,6 +10,7 @@ import { Section } from "../ui/section";
 import { Container } from "../ui/container";
 import { SectionTitle } from "../ui/section-title";
 import { Card } from "../ui/card";
+import { type SectionContent, orDefault } from "~/lib/content";
 
 type IconType = FunctionComponent<{ class?: string }>;
 
@@ -41,30 +42,34 @@ const razones: { title: string; text: string; Icon: IconType }[] = [
   },
 ];
 
-export const PorQue = component$(() => {
-  return (
-    <Section id="por-que" tone="white">
-      <Container>
-        <SectionTitle
-          align="center"
-          eyebrow="Por qué BioBal"
-          title="¿Por qué elegir BioBal?"
-        />
+export const PorQue = component$<{ content?: SectionContent }>(
+  ({ content }) => {
+    return (
+      <Section id="por-que" tone="white">
+        <Container>
+          <SectionTitle
+            align="center"
+            eyebrow={orDefault(content?.eyebrow, "Por qué BioBal")}
+            title={orDefault(content?.title, "¿Por qué elegir BioBal?")}
+          />
 
-        <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {razones.map(({ title, text, Icon }) => (
-            <Card key={title} interactive>
-              <span class="bg-primary-50 text-primary-700 ring-primary-100 inline-flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-inset">
-                <Icon class="h-6 w-6" />
-              </span>
-              <h3 class="font-display text-primary-900 mt-5 text-xl font-semibold">
-                {title}
-              </h3>
-              <p class="text-ink-soft mt-2 text-base leading-relaxed">{text}</p>
-            </Card>
-          ))}
-        </div>
-      </Container>
-    </Section>
-  );
-});
+          <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {razones.map(({ title, text, Icon }) => (
+              <Card key={title} interactive>
+                <span class="bg-primary-50 text-primary-700 ring-primary-100 inline-flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-inset">
+                  <Icon class="h-6 w-6" />
+                </span>
+                <h3 class="font-display text-primary-900 mt-5 text-xl font-semibold">
+                  {title}
+                </h3>
+                <p class="text-ink-soft mt-2 text-base leading-relaxed">
+                  {text}
+                </p>
+              </Card>
+            ))}
+          </div>
+        </Container>
+      </Section>
+    );
+  },
+);

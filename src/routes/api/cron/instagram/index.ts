@@ -7,9 +7,11 @@ import { getDb, schema } from "~/db";
  * desde el admin. Protegido opcionalmente con CRON_SECRET.
  */
 export const onGet: RequestHandler = async ({ env, request, json }) => {
+  // Falla cerrado: sin CRON_SECRET configurado o sin el header correcto, 401.
+  // (Vercel Cron envía automáticamente `Authorization: Bearer <CRON_SECRET>`.)
   const cronSecret = env.get("CRON_SECRET");
   const authHeader = request.headers.get("authorization");
-  if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+  if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
     json(401, { error: "Unauthorized" });
     return;
   }

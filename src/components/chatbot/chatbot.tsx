@@ -34,8 +34,10 @@ export const Chatbot = component$<ChatbotProps>(({ initialGreeting }) => {
   const inputValue = useSignal("");
   const messagesRef = useSignal<HTMLDivElement>();
 
-  // eslint-disable-next-line qwik/no-use-visible-task
-  useVisibleTask$(() => {
+  // El sessionId se resuelve recién en la primera interacción (no en carga),
+  // así el chatbot no fuerza hidratación temprana y se mantiene la resumability.
+  const ensureSessionId = $(() => {
+    if (state.sessionId) return state.sessionId;
     let sId = sessionStorage.getItem("biobal_chat_session");
     if (!sId) {
       sId =
@@ -45,6 +47,7 @@ export const Chatbot = component$<ChatbotProps>(({ initialGreeting }) => {
       sessionStorage.setItem("biobal_chat_session", sId);
     }
     state.sessionId = sId;
+    return sId;
   });
 
   // eslint-disable-next-line qwik/no-use-visible-task
@@ -64,12 +67,13 @@ export const Chatbot = component$<ChatbotProps>(({ initialGreeting }) => {
     state.isLoading = true;
 
     try {
+      const sessionId = await ensureSessionId();
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: state.messages.slice(-6),
-          sessionId: state.sessionId,
+          sessionId,
         }),
       });
       if (!response.ok) throw new Error("conexión");

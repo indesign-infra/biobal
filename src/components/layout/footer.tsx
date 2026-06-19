@@ -2,10 +2,13 @@ import { component$ } from "@builder.io/qwik";
 import { LuMapPin, LuPhone, LuInstagram, LuGlobe } from "@qwikest/icons/lucide";
 import { Container } from "../ui/container";
 import { Brand } from "./brand";
-import { navLinks, site } from "~/lib/site";
+import { site } from "~/lib/site";
+import { useNavSections, useSiteSettings } from "~/routes/layout";
 
 export const Footer = component$(() => {
   const year = new Date().getFullYear();
+  const navLinks = useNavSections();
+  const s = useSiteSettings().value;
 
   return (
     <footer class="bg-primary-950 text-primary-100">
@@ -19,7 +22,7 @@ export const Footer = component$(() => {
               en el complejo Small Center Las Piedras, Buenos Aires.
             </p>
             <p class="text-primary-200/70 mt-4 text-sm">
-              Referente: {site.referente}.
+              Referente: {s.referente}.
             </p>
           </div>
 
@@ -29,7 +32,7 @@ export const Footer = component$(() => {
               Navegación
             </h3>
             <ul class="mt-4 space-y-2.5 text-sm">
-              {navLinks.map((link) => (
+              {navLinks.value.map((link) => (
                 <li key={link.href}>
                   <a
                     href={link.href}
@@ -59,35 +62,35 @@ export const Footer = component$(() => {
               <li class="flex gap-3">
                 <LuMapPin class="text-accent-400 mt-0.5 h-5 w-5 shrink-0" />
                 <a
-                  href={site.address.maps}
+                  href={s.mapsUrl}
                   target="_blank"
                   rel="noreferrer noopener"
                   class="text-primary-200/85 transition-colors hover:text-white"
                 >
-                  {site.address.line1}
+                  {s.addressLine1}
                   <span class="text-primary-200/60 block">
-                    {site.address.line2}
+                    {s.addressLine2}
                   </span>
                 </a>
               </li>
               <li class="flex gap-3">
                 <LuPhone class="text-accent-400 h-5 w-5 shrink-0" />
                 <a
-                  href={`tel:${site.phone.tel}`}
+                  href={`tel:${s.phoneTel}`}
                   class="text-primary-200/85 transition-colors hover:text-white"
                 >
-                  {site.phone.display}
+                  {s.phoneDisplay}
                 </a>
               </li>
               <li class="flex gap-3">
                 <LuInstagram class="text-accent-400 h-5 w-5 shrink-0" />
                 <a
-                  href={site.instagram.url}
+                  href={s.instagramUrl}
                   target="_blank"
                   rel="noreferrer noopener"
                   class="text-primary-200/85 transition-colors hover:text-white"
                 >
-                  {site.instagram.handle}
+                  {s.instagramHandle}
                 </a>
               </li>
               <li class="flex gap-3">
@@ -107,7 +110,7 @@ export const Footer = component$(() => {
           <p>
             © {year} {site.name}. Todos los derechos reservados.
           </p>
-          <p>{site.tagline} · Las Piedras, Buenos Aires</p>
+          <p>{s.tagline} · Las Piedras, Buenos Aires</p>
         </div>
       </Container>
     </footer>

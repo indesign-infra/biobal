@@ -4,17 +4,43 @@ import type { DocumentHead } from "@builder.io/qwik-city";
 import { getDb } from "~/db";
 import { users } from "~/db/schema";
 import { eq } from "drizzle-orm";
+import {
+  hashPassword,
+  verifyPassword,
+  isHashedPassword,
+  createSessionToken,
+  SESSION_COOKIE,
+  SESSION_MAX_AGE,
+} from "~/lib/auth";
+import { rateLimit, clientIp } from "~/lib/rate-limit";
 
 export const useLoginAction = routeAction$(
-  async ({ username, password }, { cookie, redirect, env }) => {
+  async ({ username, password }, { cookie, redirect, env, request, fail }) => {
+    // Anti fuerza-bruta: máx. 10 intentos por IP cada 5 minutos.
+    if (!rateLimit(`login:${clientIp(request)}`, 10, 5 * 60 * 1000)) {
+      return fail(429, {
+        error: "Demasiados intentos. Esperá unos minutos y volvé a probar.",
+      });
+    }
+
     const db = getDb(env);
 
-    // Auto-seed del admin por defecto si no hay usuarios.
+    // Auto-seed del admin sólo si no hay usuarios. La contraseña se toma de
+    // ADMIN_PASSWORD (recomendado) y SIEMPRE se guarda hasheada.
     const existingUsers = await db.select().from(users).limit(1);
     if (existingUsers.length === 0) {
-      await db
-        .insert(users)
-        .values({ username: "admin", password: "biobal2026" });
+      const seedUser = (env.get("ADMIN_USERNAME") || "admin").toLowerCase();
+      const seedPass = env.get("ADMIN_PASSWORD") || "biobal2026";
+      if (!env.get("ADMIN_PASSWORD")) {
+        console.warn(
+          "[auth] Sembrando admin con contraseña por defecto. Configurá ADMIN_PASSWORD y cambiala.",
+        );
+      }
+      await db.insert(users).values({
+        username: seedUser,
+        password: await hashPassword(seedPass),
+        role: "owner",
+      });
     }
 
     const [user] = await db
@@ -23,18 +49,44 @@ export const useLoginAction = routeAction$(
       .where(eq(users.username, username.trim().toLowerCase()))
       .limit(1);
 
-    if (!user || user.password !== password) {
+    // Verificación. Soporta migración de contraseñas legacy en texto plano:
+    // si coinciden, se re-guardan hasheadas en el primer login.
+    let ok = false;
+    if (user) {
+      if (isHashedPassword(user.password)) {
+        ok = await verifyPassword(password, user.password);
+      } else if (user.password === password) {
+        ok = true;
+        await db
+          .update(users)
+          .set({ password: await hashPassword(password) })
+          .where(eq(users.id, user.id));
+      }
+    }
+
+    if (!ok || !user) {
       return { success: false, error: "Usuario o contraseña incorrectos." };
+    }
+
+    // Registramos el último acceso (best-effort: si la columna aún no existe
+    // por falta de migración, no bloqueamos el login).
+    try {
+      await db
+        .update(users)
+        .set({ lastLoginAt: new Date().toISOString() })
+        .where(eq(users.id, user.id));
+    } catch (e) {
+      console.error("[auth] no se pudo registrar lastLoginAt:", e);
     }
 
     const isProd =
       import.meta.env.PROD || process.env.NODE_ENV === "production";
-    cookie.set("auth_session", user.id.toString(), {
+    cookie.set(SESSION_COOKIE, await createSessionToken(env, user.id), {
       path: "/",
       httpOnly: true,
       secure: !!isProd,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: SESSION_MAX_AGE,
     });
 
     throw redirect(302, "/admin/");

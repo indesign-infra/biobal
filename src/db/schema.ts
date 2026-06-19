@@ -34,6 +34,8 @@ export const users = sqliteTable("users", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
+  role: text("role").default("admin").notNull(), // 'owner' | 'admin'
+  lastLoginAt: text("last_login_at"),
   createdAt: text("created_at")
     .default(sql`(CURRENT_TIMESTAMP)`)
     .notNull(),
@@ -135,3 +137,44 @@ export const galeria = sqliteTable("galeria", {
 
 export type GalleryImage = typeof galeria.$inferSelect;
 export type NewGalleryImage = typeof galeria.$inferInsert;
+
+// ─── SECCIONES DEL HOME (visibilidad + contenido editable) ────────────────
+export const sections = sqliteTable("sections", {
+  id: text("id").primaryKey(), // slug: hero, sobre, bio-banco, ...
+  label: text("label").notNull(), // nombre para el admin
+  enabled: integer("enabled", { mode: "boolean" }).default(true).notNull(),
+  inNav: integer("in_nav", { mode: "boolean" }).default(false).notNull(),
+  navLabel: text("nav_label"),
+  displayOrder: integer("display_order").default(0).notNull(),
+  // contenido editable (solo se usan los campos relevantes de cada sección)
+  eyebrow: text("eyebrow"),
+  title: text("title"),
+  subtitle: text("subtitle"),
+  body: text("body"),
+  imageUrl: text("image_url"),
+});
+
+export type Section = typeof sections.$inferSelect;
+export type NewSection = typeof sections.$inferInsert;
+
+// ─── DATOS DEL NEGOCIO (singleton, id = 1) ────────────────────────────────
+export const siteSettings = sqliteTable("site_settings", {
+  id: integer("id").primaryKey(),
+  tagline: text("tagline"),
+  phoneDisplay: text("phone_display"),
+  phoneTel: text("phone_tel"),
+  whatsapp: text("whatsapp"),
+  instagramHandle: text("instagram_handle"),
+  instagramUrl: text("instagram_url"),
+  addressLine1: text("address_line1"),
+  addressLine2: text("address_line2"),
+  mapsUrl: text("maps_url"),
+  email: text("email"),
+  referente: text("referente"),
+  updatedAt: text("updated_at")
+    .default(sql`(CURRENT_TIMESTAMP)`)
+    .notNull(),
+});
+
+export type SiteSettings = typeof siteSettings.$inferSelect;
+export type NewSiteSettings = typeof siteSettings.$inferInsert;

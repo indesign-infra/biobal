@@ -3,6 +3,7 @@ import { LuPlay, LuVolume2, LuVolumeX } from "@qwikest/icons/lucide";
 import { Section } from "../ui/section";
 import { Container } from "../ui/container";
 import { SectionTitle } from "../ui/section-title";
+import { type SectionContent, orDefault } from "~/lib/content";
 
 export type ReelVideo = {
   id: string;
@@ -11,9 +12,9 @@ export type ReelVideo = {
   thumbnailUrl: string | null;
 };
 
-type ReelsProps = { videos: ReelVideo[] };
+type ReelsProps = { videos: ReelVideo[]; content?: SectionContent };
 
-export const Reels = component$<ReelsProps>(({ videos }) => {
+export const Reels = component$<ReelsProps>(({ videos, content }) => {
   if (!videos || videos.length === 0) return null;
 
   return (
@@ -21,8 +22,8 @@ export const Reels = component$<ReelsProps>(({ videos }) => {
       <Container>
         <SectionTitle
           align="center"
-          eyebrow="BioBal en video"
-          title="Conocé los espacios por dentro"
+          eyebrow={orDefault(content?.eyebrow, "BioBal en video")}
+          title={orDefault(content?.title, "Conocé los espacios por dentro")}
           tone="light"
         />
         <div class="mt-12 flex flex-wrap items-start justify-center gap-8">

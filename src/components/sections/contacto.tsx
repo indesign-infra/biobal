@@ -11,13 +11,16 @@ import {
   LuArrowRight,
 } from "@qwikest/icons/lucide";
 import type { useCreateLead } from "~/routes/index";
+import { useSiteSettings } from "~/routes/layout";
 import { Section } from "../ui/section";
 import { Container } from "../ui/container";
 import { Button } from "../ui/button";
 import { especialidades, site } from "~/lib/site";
+import { type SectionContent, orDefault } from "~/lib/content";
 
 type ContactoProps = {
   action: ReturnType<typeof useCreateLead>;
+  content?: SectionContent;
 };
 
 const fieldBase =
@@ -33,39 +36,29 @@ type ContactItem = {
   sub?: string;
 };
 
-const contactItems: ContactItem[] = [
-  {
-    Icon: LuMapPin,
-    href: site.address.maps,
-    external: true,
-    label: site.address.line1,
-    sub: site.address.line2,
-  },
-  {
-    Icon: LuPhone,
-    href: `tel:${site.phone.tel}`,
-    label: site.phone.display,
-  },
-  {
-    Icon: LuInstagram,
-    href: site.instagram.url,
-    external: true,
-    label: site.instagram.handle,
-  },
-  {
-    Icon: LuGlobe,
-    href: site.url,
-    label: site.domain,
-  },
-  {
-    Icon: LuUser,
-    label: site.referente,
-  },
-];
-
-export const Contacto = component$<ContactoProps>(({ action }) => {
+export const Contacto = component$<ContactoProps>(({ action, content }) => {
   const v = action.value;
   const errors = v?.fieldErrors;
+  const s = useSiteSettings().value;
+
+  const contactItems: ContactItem[] = [
+    {
+      Icon: LuMapPin,
+      href: s.mapsUrl,
+      external: true,
+      label: s.addressLine1,
+      sub: s.addressLine2,
+    },
+    { Icon: LuPhone, href: `tel:${s.phoneTel}`, label: s.phoneDisplay },
+    {
+      Icon: LuInstagram,
+      href: s.instagramUrl,
+      external: true,
+      label: s.instagramHandle,
+    },
+    { Icon: LuGlobe, href: site.url, label: site.domain },
+    { Icon: LuUser, label: s.referente },
+  ];
 
   return (
     <Section id="contacto" tone="primary">
@@ -73,10 +66,10 @@ export const Contacto = component$<ContactoProps>(({ action }) => {
         {/* Columna de info */}
         <div>
           <p class="text-accent-300 text-sm font-semibold tracking-[0.14em] uppercase">
-            Sumate a BioBal
+            {orDefault(content?.eyebrow, "Sumate a BioBal")}
           </p>
           <h2 class="font-display mt-4 text-3xl leading-tight font-semibold text-white sm:text-4xl">
-            Sumate a BioBal
+            {orDefault(content?.title, "Sumate a BioBal")}
           </h2>
           <p class="text-primary-100/85 mt-5 max-w-lg text-base leading-relaxed sm:text-lg">
             Desarrollá tu actividad profesional en un espacio pensado para
@@ -137,6 +130,15 @@ export const Contacto = component$<ContactoProps>(({ action }) => {
             </div>
           ) : (
             <Form action={action} class="space-y-5">
+              {/* Honeypot anti-bots: invisible para humanos, debe quedar vacío. */}
+              <input
+                type="text"
+                name="website"
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                class="absolute left-[-9999px] h-0 w-0 opacity-0"
+              />
               <div>
                 <h3 class="font-display text-primary-900 text-xl font-semibold">
                   Solicitá una visita
