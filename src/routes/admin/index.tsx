@@ -89,7 +89,9 @@ export default component$(() => {
 
   return (
     <div>
-      <h1 class="font-display text-primary-900 text-2xl font-bold">Dashboard</h1>
+      <h1 class="font-display text-primary-900 text-2xl font-bold">
+        Dashboard
+      </h1>
       <p class="mt-1 text-sm text-slate-500">
         Resumen de la actividad de BioBal.
       </p>

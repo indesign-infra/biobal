@@ -83,7 +83,7 @@ export default component$(() => {
                 name="username"
                 placeholder="admin"
                 autoFocus
-                class="focus:border-accent-500 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3.5 text-white placeholder:text-slate-500 outline-none transition-colors"
+                class="focus:border-accent-500 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3.5 text-white transition-colors outline-none placeholder:text-slate-500"
               />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default component$(() => {
                 type="password"
                 name="password"
                 placeholder="••••••••"
-                class="focus:border-accent-500 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3.5 text-white placeholder:text-slate-500 outline-none transition-colors"
+                class="focus:border-accent-500 w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3.5 text-white transition-colors outline-none placeholder:text-slate-500"
               />
             </div>
 

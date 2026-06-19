@@ -5,7 +5,9 @@ import {
   z,
   type DocumentHead,
 } from "@builder.io/qwik-city";
+import { routeLoader$ } from "@builder.io/qwik-city";
 import { nanoid } from "nanoid";
+import { asc, desc, eq } from "drizzle-orm";
 import { getDb, schema } from "~/db";
 import { site } from "~/lib/site";
 
@@ -15,8 +17,33 @@ import { BioBanco } from "~/components/sections/bio-banco";
 import { Consultorios } from "~/components/sections/consultorios";
 import { Infraestructura } from "~/components/sections/infraestructura";
 import { ExperienciaPaciente } from "~/components/sections/experiencia-paciente";
+import { Reels } from "~/components/sections/reels";
+import { InstagramFeed } from "~/components/sections/instagram-feed";
 import { PorQue } from "~/components/sections/por-que";
 import { Contacto } from "~/components/sections/contacto";
+
+/** Carga el contenido dinámico de la home (reels activos, posts de Instagram). */
+export const useHomeContent = routeLoader$(async ({ env }) => {
+  try {
+    const db = getDb(env);
+    const [videos, instagramPosts] = await Promise.all([
+      db
+        .select()
+        .from(schema.verticalVideos)
+        .where(eq(schema.verticalVideos.isActive, 1))
+        .orderBy(asc(schema.verticalVideos.displayOrder)),
+      db
+        .select()
+        .from(schema.instagramPosts)
+        .orderBy(desc(schema.instagramPosts.timestamp))
+        .limit(12),
+    ]);
+    return { videos, instagramPosts };
+  } catch (error) {
+    console.error("home content loader error:", error);
+    return { videos: [], instagramPosts: [] };
+  }
+});
 
 /**
  * Acción server-side que valida con Zod y guarda el lead en Supabase.
@@ -55,6 +82,7 @@ export const useCreateLead = routeAction$(
 
 export default component$(() => {
   const createLead = useCreateLead();
+  const home = useHomeContent();
 
   return (
     <>
@@ -64,7 +92,9 @@ export default component$(() => {
       <Consultorios />
       <Infraestructura />
       <ExperienciaPaciente />
+      <Reels videos={home.value.videos} />
       <PorQue />
+      <InstagramFeed posts={home.value.instagramPosts} />
       <Contacto action={createLead} />
     </>
   );

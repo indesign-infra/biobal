@@ -159,14 +159,14 @@ ${settings?.instrucciones || "1. Trato neutro e inclusivo: nunca asumas el géne
 
 CONOCIMIENTO DE BIOBAL:
 ${
-        settings?.conocimiento ||
-        `- BioBal es un espacio integral de salud en el complejo Small Center Las Piedras (Piso 2, Oficina 202), Golfers G. C. 2972, Las Piedras, Buenos Aires.
+  settings?.conocimiento ||
+  `- BioBal es un espacio integral de salud en el complejo Small Center Las Piedras (Piso 2, Oficina 202), Golfers G. C. 2972, Las Piedras, Buenos Aires.
 - Alquila consultorios profesionales modernos, climatizados y luminosos, por módulo de 4 hs, por día o por mes, adaptables a cada especialidad.
 - Servicios: sala de espera, Wi-Fi, luz natural, aire acondicionado central, estacionamiento gratuito, seguridad y limpieza.
 - Especialidades: odontología, psicología, kinesiología, ginecología, clínica médica, nutrición, cardiología, pediatría, fonoaudiología y más.
 - Dentro de BioBal funciona el Bio Banco de Tejidos, unidad especializada en gestión, procesamiento y conservación de tejidos.
 - Referente: Lic. Mónica Álvarez (Bióloga).`
-      }
+}
 
 LLAMADO A LA ACCIÓN:
 ${settings?.cta || "Para coordinar una visita o más información, escribinos por WhatsApp:"} ${settings?.whatsapp || "5491127585392"} · Instagram: @biobal_consultorios`;

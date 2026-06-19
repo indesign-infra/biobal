@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/cron/instagram",
+      "schedule": "0 8 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)?service-worker.js",
