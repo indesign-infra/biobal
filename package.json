@@ -11,7 +11,7 @@
     "build": "qwik build",
     "build.client": "vite build",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
-    "build.server": "qwik check-client src dist && vite build -c adapters/vercel-edge/vite.config.ts",
+    "build.server": "qwik check-client src dist && VITE_SSR_BUILD=1 vite build -c adapters/vercel-edge/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
     "deploy": "vercel deploy",
     "dev": "vite --mode ssr",

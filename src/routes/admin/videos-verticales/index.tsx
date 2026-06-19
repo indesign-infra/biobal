@@ -122,16 +122,18 @@ export default component$(() => {
                       {v.isActive ? "Activo" : "Inactivo"}
                     </button>
                   </Form>
-                  <Form action={del}>
-                    <input type="hidden" name="id" value={v.id} />
-                    <button
-                      type="submit"
-                      class="text-slate-400 transition-colors hover:text-red-500"
-                      title="Eliminar"
-                    >
-                      <LuTrash2 class="h-4 w-4" />
-                    </button>
-                  </Form>
+                  <button
+                    type="button"
+                    onClick$={async () => {
+                      if (window.confirm("¿Estás seguro de que querés eliminar este video?")) {
+                        await del.submit({ id: v.id });
+                      }
+                    }}
+                    class="text-slate-400 transition-colors hover:text-red-500"
+                    title="Eliminar"
+                  >
+                    <LuTrash2 class="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>

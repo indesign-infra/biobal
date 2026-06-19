@@ -10,6 +10,7 @@ import {
 } from "@builder.io/qwik-city";
 import { getDb, schema } from "~/db";
 import { eq } from "drizzle-orm";
+import { uploadToBlob } from "~/lib/upload";
 import { LuArrowLeft, LuUploadCloud } from "@qwikest/icons/lucide";
 
 export const useSection = routeLoader$(async ({ params, env, status }) => {
@@ -91,15 +92,14 @@ export default component$(() => {
   const onImageFile = $(async (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      errorMsg.value = "La imagen supera el límite de 25MB.";
+      return;
+    }
     isWorking.value = true;
     errorMsg.value = null;
     try {
-      const { upload } = await import("@vercel/blob/client");
-      const blob = await upload(`secciones/${file.name}`, file, {
-        access: "public",
-        handleUploadUrl: "/api/blob/upload",
-      });
-      imageUrl.value = blob.url;
+      imageUrl.value = await uploadToBlob(file, "secciones");
     } catch (err) {
       console.error("section image upload error:", err);
       errorMsg.value = "No se pudo subir la imagen.";

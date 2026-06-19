@@ -5,6 +5,7 @@ import {
   deleteGalleryImage,
   reorderGalleryImages,
 } from "~/routes/admin/galeria/index";
+import { uploadToBlob } from "~/lib/upload";
 
 interface GalleryImage {
   id: number;
@@ -40,14 +41,12 @@ export const GalleryUploader = component$<Props>(({ images }) => {
     state.isUploading = true;
     state.error = null;
 
-    const { upload } = await import("@vercel/blob/client");
-
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
       try {
-        // Límite razonable del lado del cliente (el servidor también valida tipo/tamaño).
-        if (file.size > 15 * 1024 * 1024) {
-          state.error = `El archivo "${file.name}" supera el límite de 15MB.`;
+        // El servidor valida tipo/tamaño; acá avisamos antes para mejor UX.
+        if (file.size > 25 * 1024 * 1024) {
+          state.error = `El archivo "${file.name}" supera el límite de 25MB.`;
           continue;
         }
 
@@ -55,12 +54,9 @@ export const GalleryUploader = component$<Props>(({ images }) => {
 
         // Subimos a Vercel Blob (no a la DB): la imagen se sirve por CDN y el
         // HTML de la home queda liviano. Guardamos sólo la URL.
-        const blob = await upload(`galeria/${file.name}`, file, {
-          access: "public",
-          handleUploadUrl: "/api/blob/upload",
-        });
+        const url = await uploadToBlob(file, "galeria");
 
-        const newImage = await addGalleryImage(blob.url, state.images.length);
+        const newImage = await addGalleryImage(url, state.images.length);
         if (newImage) state.images.push(newImage);
       } catch (err) {
         console.error("gallery upload failed:", err);

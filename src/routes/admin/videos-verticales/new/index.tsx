@@ -1,4 +1,4 @@
-import { component$, useSignal, $ } from "@builder.io/qwik";
+import { component$, useSignal, $, useComputed$ } from "@builder.io/qwik";
 import {
   routeAction$,
   zod$,
@@ -9,7 +9,8 @@ import {
 import { getDb, schema } from "~/db";
 import { asc } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { LuArrowLeft, LuUploadCloud } from "@qwikest/icons/lucide";
+import { LuArrowLeft, LuUploadCloud, LuLoader2 } from "@qwikest/icons/lucide";
+import { uploadToBlob } from "~/lib/upload";
 
 export const useCreateVideo = routeAction$(
   async (data, { env, fail, redirect }) => {
@@ -60,6 +61,11 @@ export default component$(() => {
 
   const isWorking = useSignal(false);
   const progress = useSignal("");
+
+  const progressPct = useComputed$(() => {
+    const match = progress.value.match(/(\d+)%/);
+    return match ? Number(match[1]) : null;
+  });
   const errorMsg = useSignal<string | null>(null);
 
   const videoPreview = useSignal("");
@@ -91,24 +97,25 @@ export default component$(() => {
       const thumbFile = (form.querySelector("#thumbFile") as HTMLInputElement)
         ?.files?.[0];
 
-      if (videoFile || thumbFile) {
-        const { upload } = await import("@vercel/blob/client");
-        if (videoFile) {
-          progress.value = "Subiendo video...";
-          const blob = await upload(`reels/${videoFile.name}`, videoFile, {
-            access: "public",
-            handleUploadUrl: "/api/blob/upload",
-          });
-          videoUrl = blob.url;
+      if (videoFile) {
+        if (videoFile.size > 80 * 1024 * 1024) {
+          throw new Error(
+            "El video supera el límite de 80MB. Para archivos más grandes, pegá una URL externa.",
+          );
         }
-        if (thumbFile) {
-          progress.value = "Subiendo miniatura...";
-          const blob = await upload(`reels/${thumbFile.name}`, thumbFile, {
-            access: "public",
-            handleUploadUrl: "/api/blob/upload",
-          });
-          thumbnailUrl = blob.url;
+        progress.value = "Subiendo video (0%)...";
+        videoUrl = await uploadToBlob(videoFile, "reels", (pct) => {
+          progress.value = `Subiendo video (${pct}%)...`;
+        });
+      }
+      if (thumbFile) {
+        if (thumbFile.size > 25 * 1024 * 1024) {
+          throw new Error("La miniatura supera el límite de 25MB.");
         }
+        progress.value = "Subiendo miniatura (0%)...";
+        thumbnailUrl = await uploadToBlob(thumbFile, "reels", (pct) => {
+          progress.value = `Subiendo miniatura (${pct}%)...`;
+        });
       }
 
       if (!videoUrl) throw new Error("Subí un video o pegá una URL.");
@@ -297,16 +304,47 @@ export default component$(() => {
           </label>
         </div>
 
+        {isWorking.value && (
+          <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-inner">
+            <div class="flex items-center justify-between text-sm font-medium text-slate-700">
+              <span class="flex items-center gap-2">
+                <LuLoader2 class="h-4 w-4 animate-spin text-accent-600" />
+                {progress.value || "Procesando..."}
+              </span>
+              {progressPct.value !== null && (
+                <span class="text-xs font-bold text-slate-500">
+                  {progressPct.value}%
+                </span>
+              )}
+            </div>
+            {progressPct.value !== null && (
+              <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
+                <div
+                  class="bg-accent-500 h-full rounded-full transition-all duration-150"
+                  style={{ width: `${progressPct.value}%` }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+
         <div class="flex items-center gap-4 border-t border-slate-100 pt-5">
           <button
             type="submit"
             disabled={isWorking.value || create.isRunning}
-            class="bg-accent-500 hover:bg-accent-600 font-display inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            class="bg-accent-500 hover:bg-accent-600 font-display inline-flex min-w-[200px] items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors disabled:opacity-50"
           >
-            <LuUploadCloud class="h-4 w-4" />
-            {isWorking.value || create.isRunning
-              ? progress.value || "Procesando..."
-              : "Crear video"}
+            {isWorking.value || create.isRunning ? (
+              <>
+                <LuLoader2 class="h-4 w-4 animate-spin" />
+                {progress.value || "Procesando..."}
+              </>
+            ) : (
+              <>
+                <LuUploadCloud class="h-4 w-4" />
+                Crear video
+              </>
+            )}
           </button>
           <Link
             href="/admin/videos-verticales"

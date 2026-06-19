@@ -3,14 +3,14 @@ import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { getSessionUserId } from "~/lib/auth";
 
 /**
- * Genera el token para subir archivos directamente a Vercel Blob desde el
- * navegador (sin pasar por el límite de tamaño de las funciones serverless).
- * Lo usan el alta de reels y la galería del admin: SÓLO con sesión admin válida.
+ * Emite el token para subir archivos directo del navegador a Vercel Blob
+ * (flujo client-upload del SDK). Permite archivos grandes sin pasar por el
+ * límite de body de las funciones. Sólo para admins autenticados.
  */
 export const onPost: RequestHandler = async ({ request, json, env, cookie }) => {
-  // El flujo de @vercel/blob/client hace dos POST: el segundo (onUploadCompleted,
-  // server-to-server) no lleva la cookie. handleUpload distingue ambos por el body;
-  // exigimos sesión sólo en el primero (generación de token), que sí va con cookie.
+  // El flujo del SDK hace dos POST: el primero (generación de token) lleva la
+  // cookie de sesión; el segundo (onUploadCompleted, server-to-server) no. Por
+  // eso exigimos la sesión sólo en onBeforeGenerateToken.
   const userId = await getSessionUserId({ cookie, env });
 
   const token = env.get("BLOB_READ_WRITE_TOKEN");
@@ -26,7 +26,6 @@ export const onPost: RequestHandler = async ({ request, json, env, cookie }) => 
       request,
       token,
       onBeforeGenerateToken: async () => {
-        // Sólo un admin autenticado puede obtener un token de subida.
         if (userId === null) {
           throw new Error("No autorizado");
         }
@@ -39,13 +38,13 @@ export const onPost: RequestHandler = async ({ request, json, env, cookie }) => 
             "image/png",
             "image/webp",
           ],
-          maximumSizeInBytes: 200 * 1024 * 1024, // 200 MB
+          maximumSizeInBytes: 80 * 1024 * 1024, // 80 MB
           addRandomSuffix: true,
         };
       },
       onUploadCompleted: async () => {
-        // En producción Vercel llama acá cuando termina la subida.
-        // No necesitamos hacer nada extra: guardamos la URL al crear el video.
+        // Vercel llama acá al terminar la subida. La URL la guardamos al crear
+        // el video/imagen, así que no hace falta nada extra.
       },
     });
     json(200, result);
@@ -53,6 +52,8 @@ export const onPost: RequestHandler = async ({ request, json, env, cookie }) => 
     console.error("blob upload error:", error);
     const msg = (error as Error).message;
     const status = msg === "No autorizado" ? 401 : 400;
-    json(status, { error: status === 401 ? "No autorizado" : "No se pudo procesar la subida." });
+    json(status, {
+      error: status === 401 ? "No autorizado" : "No se pudo procesar la subida.",
+    });
   }
 };

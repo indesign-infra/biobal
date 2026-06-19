@@ -8,6 +8,7 @@ import { qwikCity } from "@builder.io/qwik-city/vite";
 import tsconfigPaths from "vite-tsconfig-paths";
 import pkg from "./package.json";
 import tailwindcss from "@tailwindcss/vite";
+import { fileURLToPath } from "node:url";
 type PkgDep = Record<string, string>;
 const { dependencies = {}, devDependencies = {} } = pkg as any as {
   dependencies: PkgDep;
@@ -19,7 +20,18 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
  * Note that Vite normally starts from `index.html` but the qwikCity plugin makes start at `src/entry.ssr.tsx` instead.
  */
 
+// El build del servidor (adapter Vercel Edge) setea VITE_SSR_BUILD=1. En el
+// build de cliente (browser) NO está, así que aplicamos los shims de @vercel/blob
+// para evitar que se bundlee el crypto/undici de Node (que usa util.promisify y
+// rompe en el navegador). En el server se usan los módulos reales.
+const isServerBuild = process.env.VITE_SSR_BUILD === "1";
+const blobShim = (file: string) =>
+  fileURLToPath(new URL(`node_modules/@vercel/blob/dist/${file}`, import.meta.url));
+
 export default defineConfig(({ command, mode }): UserConfig => {
+  // Sólo en el build de producción de CLIENTE (no dev, no server) forzamos la
+  // resolución browser. En dev, Vite ya distingue cliente/SSR por request.
+  const applyBrowserResolve = command === "build" && !isServerBuild;
   return {
     plugins: [
       qwikCity(),
@@ -27,6 +39,22 @@ export default defineConfig(({ command, mode }): UserConfig => {
       tsconfigPaths({ root: "." }),
       tailwindcss(),
     ],
+    resolve: !applyBrowserResolve
+      ? undefined
+      : {
+          // Forzamos la condición `browser` para el build de cliente: así deps
+          // como `jose` (que trae @vercel/blob vía @vercel/oidc) resuelven su
+          // build de navegador (Web Crypto) en vez del de Node (que usa
+          // util.promisify y rompe en el browser).
+          conditions: ["browser", "module", "import", "default"],
+          alias: {
+            // @vercel/blob usa el `browser` FIELD (no exports) para estos
+            // builtins de Node; lo replicamos con sus propios shims.
+            crypto: blobShim("crypto-browser.js"),
+            undici: blobShim("undici-browser.js"),
+            stream: blobShim("stream-browser.js"),
+          },
+        },
     // This tells Vite which dependencies to pre-build in dev mode.
     optimizeDeps: {
       // Put problematic deps that break bundling here, mostly those with binaries.
