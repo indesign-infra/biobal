@@ -22,9 +22,9 @@ export const ExperienciaPaciente = component$<{ content?: SectionContent }>(
     return (
       <Section id="experiencia" tone="surface">
         <Container class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div>
+          <div data-reveal="left">
             <LuQuote class="text-accent-400 h-10 w-10" />
-            <p class="text-accent-600 mt-3 text-sm font-semibold tracking-[0.14em] uppercase">
+            <p class="bb-eyebrow text-accent-600 mt-3 text-sm font-semibold tracking-[0.14em] uppercase">
               {eyebrow}
             </p>
             <h2 class="font-display text-primary-900 mt-4 text-3xl leading-tight font-semibold sm:text-4xl">
@@ -39,12 +39,14 @@ export const ExperienciaPaciente = component$<{ content?: SectionContent }>(
             </p>
           </div>
 
-          <ImagePlaceholder
-            alt="Área de espera confortable y cálida para los pacientes de BioBal"
-            src={content?.imageUrl || undefined}
-            label="Imagen: sala de espera / recepción"
-            ratio="4 / 3"
-          />
+          <div data-reveal="right">
+            <ImagePlaceholder
+              alt="Área de espera confortable y cálida para los pacientes de BioBal"
+              src={content?.imageUrl || undefined}
+              label="Imagen: sala de espera / recepción"
+              ratio="4 / 3"
+            />
+          </div>
         </Container>
       </Section>
     );

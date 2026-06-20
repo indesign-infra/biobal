@@ -105,3 +105,131 @@
     }
   }
 }
+
+/* =============================================================================
+   Reveal on scroll
+   Un IntersectionObserver (script inline en root.tsx) agrega `.reveal-ready` al
+   <html> y `.is-visible` a cada [data-reveal] cuando entra en viewport.
+   Sin JS o con prefers-reduced-motion: el contenido se ve normal (no se oculta).
+   ============================================================================ */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready [data-reveal] {
+    opacity: 0;
+    transform: translateY(30px);
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+  }
+  .reveal-ready [data-reveal="left"] {
+    transform: translateX(-36px);
+  }
+  .reveal-ready [data-reveal="right"] {
+    transform: translateX(36px);
+  }
+  .reveal-ready [data-reveal="scale"] {
+    transform: scale(0.93);
+  }
+  .reveal-ready [data-reveal="fade"] {
+    transform: none;
+  }
+  .reveal-ready [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* =============================================================================
+   Detalles estéticos
+   ============================================================================ */
+/* Texto con degradé teal (para resaltar palabras clave en títulos) */
+.text-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-accent-300),
+    var(--color-accent-500) 55%,
+    var(--color-accent-600)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Eyebrow con línea de acento que lo precede */
+.bb-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.bb-eyebrow::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    90deg,
+    var(--color-accent-500),
+    color-mix(in oklab, var(--color-accent-500) 10%, transparent)
+  );
+}
+.bb-eyebrow.is-center::before {
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--color-accent-500) 10%, transparent),
+    var(--color-accent-500)
+  );
+}
+
+/* Glow extra en cards al hover */
+.bb-card-glow {
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes bb-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-14px);
+    }
+  }
+  .bb-float {
+    animation: bb-float 7s ease-in-out infinite;
+  }
+
+  @keyframes bb-glow {
+    0%,
+    100% {
+      opacity: 0.45;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.08);
+    }
+  }
+  .bb-glow {
+    animation: bb-glow 9s ease-in-out infinite;
+  }
+
+  @keyframes bb-pulse-dot {
+    0% {
+      box-shadow: 0 0 0 0
+        color-mix(in oklab, var(--color-accent-500) 55%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 9px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+  .bb-pulse-dot {
+    animation: bb-pulse-dot 2.6s ease-out infinite;
+  }
+}

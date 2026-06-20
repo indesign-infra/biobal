@@ -28,7 +28,10 @@ export const onRequest: RequestHandler = async ({
 }) => {
   const currentPath = url.pathname.replace(/\/$/, "");
   const isLoginPage = currentPath === "/admin/login";
-  const userId = await verifySessionToken(env, cookie.get(SESSION_COOKIE)?.value);
+  const userId = await verifySessionToken(
+    env,
+    cookie.get(SESSION_COOKIE)?.value,
+  );
   const hasValidSession = userId !== null;
 
   if (!hasValidSession && !isLoginPage) {
@@ -40,7 +43,10 @@ export const onRequest: RequestHandler = async ({
 };
 
 export const useAdminUser = routeLoader$(async ({ cookie, env }) => {
-  const userId = await verifySessionToken(env, cookie.get(SESSION_COOKIE)?.value);
+  const userId = await verifySessionToken(
+    env,
+    cookie.get(SESSION_COOKIE)?.value,
+  );
   if (userId === null) return null;
   try {
     const db = getDb(env);

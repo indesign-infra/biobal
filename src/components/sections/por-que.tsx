@@ -47,15 +47,23 @@ export const PorQue = component$<{ content?: SectionContent }>(
     return (
       <Section id="por-que" tone="white">
         <Container>
-          <SectionTitle
-            align="center"
-            eyebrow={orDefault(content?.eyebrow, "Por qué BioBal")}
-            title={orDefault(content?.title, "¿Por qué elegir BioBal?")}
-          />
+          <div data-reveal>
+            <SectionTitle
+              align="center"
+              eyebrow={orDefault(content?.eyebrow, "Por qué BioBal")}
+              title={orDefault(content?.title, "¿Por qué elegir BioBal?")}
+            />
+          </div>
 
           <div class="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {razones.map(({ title, text, Icon }) => (
-              <Card key={title} interactive>
+            {razones.map(({ title, text, Icon }, i) => (
+              <Card
+                key={title}
+                interactive
+                class="bb-card-glow"
+                data-reveal
+                style={{ "--reveal-delay": `${i * 80}ms` }}
+              >
                 <span class="bg-primary-50 text-primary-700 ring-primary-100 inline-flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-inset">
                   <Icon class="h-6 w-6" />
                 </span>

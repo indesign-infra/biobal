@@ -10,7 +10,7 @@ import {
 } from "@builder.io/qwik-city";
 import { getDb, schema } from "~/db";
 import { asc, eq } from "drizzle-orm";
-import { LuTrash2, LuPlus } from "@qwikest/icons/lucide";
+import { LuTrash2, LuPlus, LuPencil } from "@qwikest/icons/lucide";
 
 export const useVideos = routeLoader$(async ({ env }) => {
   try {
@@ -122,18 +122,31 @@ export default component$(() => {
                       {v.isActive ? "Activo" : "Inactivo"}
                     </button>
                   </Form>
-                  <button
-                    type="button"
-                    onClick$={async () => {
-                      if (window.confirm("¿Estás seguro de que querés eliminar este video?")) {
-                        await del.submit({ id: v.id });
-                      }
-                    }}
-                    class="text-slate-400 transition-colors hover:text-red-500"
-                    title="Eliminar"
-                  >
-                    <LuTrash2 class="h-4 w-4" />
-                  </button>
+                  <div class="flex items-center gap-1">
+                    <Link
+                      href={`/admin/videos-verticales/${v.id}`}
+                      class="hover:text-primary-700 p-1 text-slate-400 transition-colors"
+                      title="Editar"
+                    >
+                      <LuPencil class="h-4 w-4" />
+                    </Link>
+                    <button
+                      type="button"
+                      onClick$={async () => {
+                        if (
+                          window.confirm(
+                            "¿Estás seguro de que querés eliminar este video?",
+                          )
+                        ) {
+                          await del.submit({ id: v.id });
+                        }
+                      }}
+                      class="p-1 text-slate-400 transition-colors hover:text-red-500"
+                      title="Eliminar"
+                    >
+                      <LuTrash2 class="h-4 w-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

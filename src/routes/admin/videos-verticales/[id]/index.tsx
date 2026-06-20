@@ -1,5 +1,6 @@
 import { component$, useSignal, $, useComputed$ } from "@builder.io/qwik";
 import {
+  routeLoader$,
   routeAction$,
   zod$,
   z,
@@ -7,13 +8,27 @@ import {
   type DocumentHead,
 } from "@builder.io/qwik-city";
 import { getDb, schema } from "~/db";
-import { asc } from "drizzle-orm";
-import { nanoid } from "nanoid";
-import { LuArrowLeft, LuUploadCloud, LuLoader2 } from "@qwikest/icons/lucide";
+import { eq } from "drizzle-orm";
+import { LuArrowLeft, LuSave } from "@qwikest/icons/lucide";
 import { uploadToBlob } from "~/lib/upload";
 import { VideoTip } from "~/components/admin/video-tip";
 
-export const useCreateVideo = routeAction$(
+export const useVideoDetail = routeLoader$(async ({ env, params }) => {
+  try {
+    const db = getDb(env);
+    const [v] = await db
+      .select()
+      .from(schema.verticalVideos)
+      .where(eq(schema.verticalVideos.id, params.id))
+      .limit(1);
+    return v ?? null;
+  } catch (error) {
+    console.error("video detail loader error:", error);
+    return null;
+  }
+});
+
+export const useUpdateVideo = routeAction$(
   async (data, { env, fail, redirect }) => {
     if (!data.videoUrl) {
       return fail(400, {
@@ -22,28 +37,27 @@ export const useCreateVideo = routeAction$(
     }
     try {
       const db = getDb(env);
-      const [last] = await db
-        .select({ o: schema.verticalVideos.displayOrder })
-        .from(schema.verticalVideos)
-        .orderBy(asc(schema.verticalVideos.displayOrder));
-      await db.insert(schema.verticalVideos).values({
-        id: "reel-" + nanoid(8),
-        title: data.title.trim(),
-        videoUrl: data.videoUrl.trim(),
-        thumbnailUrl: data.thumbnailUrl?.trim() || null,
-        isActive: data.isActive === "true" ? 1 : 0,
-        displayOrder:
-          data.displayOrder != null && data.displayOrder !== ""
-            ? Number(data.displayOrder)
-            : (last?.o ?? -1) + 1,
-      });
+      await db
+        .update(schema.verticalVideos)
+        .set({
+          title: data.title.trim(),
+          videoUrl: data.videoUrl.trim(),
+          thumbnailUrl: data.thumbnailUrl?.trim() || null,
+          isActive: data.isActive === "true" ? 1 : 0,
+          displayOrder:
+            data.displayOrder != null && data.displayOrder !== ""
+              ? Number(data.displayOrder)
+              : 0,
+        })
+        .where(eq(schema.verticalVideos.id, data.id));
     } catch (e) {
-      console.error("create video error:", e);
-      return fail(500, { error: "Error al guardar el video." });
+      console.error("update video error:", e);
+      return fail(500, { error: "Error al guardar los cambios." });
     }
     throw redirect(302, "/admin/videos-verticales");
   },
   zod$({
+    id: z.string().min(1),
     title: z.string().min(1, "Poné un título"),
     videoUrl: z.string().optional(),
     thumbnailUrl: z.string().optional(),
@@ -58,28 +72,34 @@ const textInput =
   "w-full bg-white border border-slate-200 focus:border-accent-500 rounded-xl px-4 py-2.5 text-sm outline-none transition-colors";
 
 export default component$(() => {
-  const create = useCreateVideo();
+  const detail = useVideoDetail();
+  const update = useUpdateVideo();
+
+  const v = detail.value;
+
+  // Estado prefilled con los valores actuales.
+  const videoUrl = useSignal(v?.videoUrl ?? "");
+  const thumbnailUrl = useSignal(v?.thumbnailUrl ?? "");
+  const videoPreview = useSignal(v?.videoUrl ?? "");
+  const thumbPreview = useSignal(v?.thumbnailUrl ?? "");
+  const isActive = useSignal(v ? v.isActive === 1 : true);
 
   const isWorking = useSignal(false);
   const progress = useSignal("");
-
-  const progressPct = useComputed$(() => {
-    const match = progress.value.match(/(\d+)%/);
-    return match ? Number(match[1]) : null;
-  });
   const errorMsg = useSignal<string | null>(null);
 
-  const videoPreview = useSignal("");
-  const thumbPreview = useSignal("");
-  const isActive = useSignal(true);
+  const progressPct = useComputed$(() => {
+    const m = progress.value.match(/(\d+)%/);
+    return m ? Number(m[1]) : null;
+  });
 
   const onVideoFile = $((e: Event) => {
     const f = (e.target as HTMLInputElement).files?.[0];
-    videoPreview.value = f ? URL.createObjectURL(f) : "";
+    if (f) videoPreview.value = URL.createObjectURL(f);
   });
   const onThumbFile = $((e: Event) => {
     const f = (e.target as HTMLInputElement).files?.[0];
-    thumbPreview.value = f ? URL.createObjectURL(f) : "";
+    if (f) thumbPreview.value = URL.createObjectURL(f);
   });
 
   const handleSubmit = $(async (_ev: Event, form: HTMLFormElement) => {
@@ -90,8 +110,11 @@ export default component$(() => {
       const title = (fd.get("title") as string)?.trim();
       if (!title) throw new Error("Poné un título.");
 
-      let videoUrl = (fd.get("videoUrl") as string)?.trim() || "";
-      let thumbnailUrl = (fd.get("thumbnailUrl") as string)?.trim() || "";
+      // Por defecto mantenemos lo actual; sólo reemplazamos si hay archivo o URL nueva.
+      let nextVideoUrl =
+        (fd.get("videoUrl") as string)?.trim() || videoUrl.value;
+      let nextThumbUrl =
+        (fd.get("thumbnailUrl") as string)?.trim() || thumbnailUrl.value;
 
       const videoFile = (form.querySelector("#videoFile") as HTMLInputElement)
         ?.files?.[0];
@@ -105,7 +128,7 @@ export default component$(() => {
           );
         }
         progress.value = "Subiendo video (0%)...";
-        videoUrl = await uploadToBlob(videoFile, "reels", (pct) => {
+        nextVideoUrl = await uploadToBlob(videoFile, "reels", (pct) => {
           progress.value = `Subiendo video (${pct}%)...`;
         });
       }
@@ -114,30 +137,46 @@ export default component$(() => {
           throw new Error("La miniatura supera el límite de 25MB.");
         }
         progress.value = "Subiendo miniatura (0%)...";
-        thumbnailUrl = await uploadToBlob(thumbFile, "reels", (pct) => {
+        nextThumbUrl = await uploadToBlob(thumbFile, "reels", (pct) => {
           progress.value = `Subiendo miniatura (${pct}%)...`;
         });
       }
 
-      if (!videoUrl) throw new Error("Subí un video o pegá una URL.");
+      if (!nextVideoUrl) throw new Error("Subí un video o pegá una URL.");
 
       progress.value = "Guardando...";
-      await create.submit({
+      await update.submit({
+        id: v!.id,
         title,
-        videoUrl,
-        thumbnailUrl,
-        displayOrder: (fd.get("displayOrder") as string) || "",
+        videoUrl: nextVideoUrl,
+        thumbnailUrl: nextThumbUrl,
+        displayOrder: (fd.get("displayOrder") as string) || "0",
         isActive: isActive.value ? "true" : "false",
       });
     } catch (e) {
-      console.error("upload/create error:", e);
-      errorMsg.value =
-        (e as Error).message || "Hubo un error al procesar el video.";
+      console.error("update error:", e);
+      errorMsg.value = (e as Error).message || "Hubo un error al guardar.";
     } finally {
       isWorking.value = false;
       progress.value = "";
     }
   });
+
+  if (!v) {
+    return (
+      <div class="mx-auto max-w-2xl">
+        <Link
+          href="/admin/videos-verticales"
+          class="inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-slate-700"
+        >
+          <LuArrowLeft class="h-4 w-4" /> Volver a reels
+        </Link>
+        <p class="mt-6 rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500">
+          No se encontró este video. Puede que haya sido eliminado.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div class="mx-auto max-w-2xl">
@@ -148,19 +187,19 @@ export default component$(() => {
         <LuArrowLeft class="h-4 w-4" /> Volver a reels
       </Link>
       <h1 class="font-display text-primary-900 mt-3 text-2xl font-bold">
-        Nuevo video vertical
+        Editar video
       </h1>
       <p class="mt-1 text-sm text-slate-500">
-        Subí un .mp4 desde tu compu (o pegá una URL) y una miniatura de portada.
+        Cambiá el título, la portada, el orden o reemplazá el video.
       </p>
 
       <div class="mt-5">
         <VideoTip />
       </div>
 
-      {(errorMsg.value || create.value?.failed) && (
+      {(errorMsg.value || update.value?.failed) && (
         <div class="mt-5 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
-          ⚠️ {errorMsg.value || (create.value as { error?: string })?.error}
+          ⚠️ {errorMsg.value || (update.value as { error?: string })?.error}
         </div>
       )}
 
@@ -173,12 +212,7 @@ export default component$(() => {
           <label class="mb-1.5 block text-xs font-bold text-slate-500 uppercase">
             Título
           </label>
-          <input
-            name="title"
-            required
-            class={textInput}
-            placeholder="Ej. Recorrido por el consultorio 202"
-          />
+          <input name="title" required class={textInput} value={v.title} />
         </div>
 
         {/* Video */}
@@ -188,7 +222,7 @@ export default component$(() => {
           </p>
           <div>
             <label class="mb-1.5 block text-xs font-semibold text-slate-600">
-              Subir archivo (MP4 / WebM)
+              Reemplazar archivo (opcional)
             </label>
             <input
               type="file"
@@ -204,11 +238,12 @@ export default component$(() => {
           </div>
           <input
             name="videoUrl"
+            value={v.videoUrl}
             onInput$={(e) =>
               (videoPreview.value = (e.target as HTMLInputElement).value)
             }
             class={textInput}
-            placeholder="https://...mp4 o /videos/reel.mp4"
+            placeholder="https://...mp4"
           />
           {videoPreview.value && (
             <div class="flex justify-center pt-2">
@@ -230,11 +265,11 @@ export default component$(() => {
         {/* Miniatura */}
         <div class="border-slate-150 space-y-3 rounded-2xl border bg-slate-50/60 p-5">
           <p class="text-primary-900 border-b border-slate-200 pb-2 text-sm font-bold">
-            Miniatura / portada (opcional)
+            Miniatura / portada
           </p>
           <div>
             <label class="mb-1.5 block text-xs font-semibold text-slate-600">
-              Subir imagen (JPG / PNG / WebP)
+              Reemplazar imagen (opcional)
             </label>
             <input
               type="file"
@@ -250,11 +285,12 @@ export default component$(() => {
           </div>
           <input
             name="thumbnailUrl"
+            value={v.thumbnailUrl || ""}
             onInput$={(e) =>
               (thumbPreview.value = (e.target as HTMLInputElement).value)
             }
             class={textInput}
-            placeholder="https://...jpg o /videos/reel.jpg"
+            placeholder="https://...jpg"
           />
           {thumbPreview.value && (
             <div class="flex justify-center pt-2">
@@ -280,7 +316,7 @@ export default component$(() => {
             <input
               type="number"
               name="displayOrder"
-              placeholder="0"
+              value={v.displayOrder}
               class={textInput}
             />
             <p class="mt-1 text-[10px] text-slate-400">
@@ -309,47 +345,25 @@ export default component$(() => {
           </label>
         </div>
 
-        {isWorking.value && (
-          <div class="rounded-2xl border border-slate-200 bg-slate-50/80 p-5 shadow-inner">
-            <div class="flex items-center justify-between text-sm font-medium text-slate-700">
-              <span class="flex items-center gap-2">
-                <LuLoader2 class="text-accent-600 h-4 w-4 animate-spin" />
-                {progress.value || "Procesando..."}
-              </span>
-              {progressPct.value !== null && (
-                <span class="text-xs font-bold text-slate-500">
-                  {progressPct.value}%
-                </span>
-              )}
-            </div>
-            {progressPct.value !== null && (
-              <div class="mt-3 h-2.5 w-full overflow-hidden rounded-full bg-slate-200">
-                <div
-                  class="bg-accent-500 h-full rounded-full transition-all duration-150"
-                  style={{ width: `${progressPct.value}%` }}
-                />
-              </div>
-            )}
+        {isWorking.value && progressPct.value !== null && (
+          <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+            <div
+              class="bg-accent-500 h-full rounded-full transition-all"
+              style={{ width: `${progressPct.value}%` }}
+            />
           </div>
         )}
 
         <div class="flex items-center gap-4 border-t border-slate-100 pt-5">
           <button
             type="submit"
-            disabled={isWorking.value || create.isRunning}
-            class="bg-accent-500 hover:bg-accent-600 font-display inline-flex min-w-[200px] items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors disabled:opacity-50"
+            disabled={isWorking.value || update.isRunning}
+            class="bg-accent-500 hover:bg-accent-600 font-display inline-flex min-w-[170px] items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-semibold text-white transition-colors disabled:opacity-50"
           >
-            {isWorking.value || create.isRunning ? (
-              <>
-                <LuLoader2 class="h-4 w-4 animate-spin" />
-                {progress.value || "Procesando..."}
-              </>
-            ) : (
-              <>
-                <LuUploadCloud class="h-4 w-4" />
-                Crear video
-              </>
-            )}
+            <LuSave class="h-4 w-4" />
+            {isWorking.value || update.isRunning
+              ? progress.value || "Guardando..."
+              : "Guardar cambios"}
           </button>
           <Link
             href="/admin/videos-verticales"
@@ -364,6 +378,6 @@ export default component$(() => {
 });
 
 export const head: DocumentHead = {
-  title: "Nuevo reel — BioBal Admin",
+  title: "Editar reel — BioBal Admin",
   meta: [{ name: "robots", content: "noindex, nofollow" }],
 };

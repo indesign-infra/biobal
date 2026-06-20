@@ -4,6 +4,15 @@ import { RouterHead } from "./components/router-head/router-head";
 
 import "./global.css";
 
+/**
+ * Reveal-on-scroll con un único IntersectionObserver, sin hidratación de Qwik.
+ * Corre en el <head> antes del paint: agrega `reveal-ready` (que activa el
+ * estado oculto inicial de los [data-reveal]) y luego revela cada uno al entrar
+ * en viewport. Si no hay soporte o el usuario pide menos movimiento, no oculta
+ * nada (el contenido se ve normal). Tolerante a fallos (try/catch).
+ */
+const revealScript = `(function(){var d=document,h=d.documentElement;try{if(!('IntersectionObserver' in window)||matchMedia('(prefers-reduced-motion: reduce)').matches)return;h.classList.add('reveal-ready');var run=function(){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('is-visible');io.unobserve(e.target);}});},{rootMargin:'0px 0px -8% 0px',threshold:0.12});d.querySelectorAll('[data-reveal]').forEach(function(n){io.observe(n);});};if(d.readyState!=='loading')run();else d.addEventListener('DOMContentLoaded',run);}catch(e){h.classList.remove('reveal-ready');}})();`;
+
 export default component$(() => {
   /**
    * The root of a QwikCity site always start with the <QwikCityProvider> component,
@@ -16,6 +25,7 @@ export default component$(() => {
     <QwikCityProvider>
       <head>
         <meta charset="utf-8" />
+        <script dangerouslySetInnerHTML={revealScript} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"

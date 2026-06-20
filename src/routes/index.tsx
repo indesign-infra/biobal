@@ -83,7 +83,8 @@ export const useCreateLead = routeAction$(
     // Rate limit: máx. 5 envíos por IP cada minuto.
     if (!rateLimit(`lead:${clientIp(request)}`, 5, 60 * 1000)) {
       return fail(429, {
-        message: "Recibimos varios envíos. Esperá un momento e intentá de nuevo.",
+        message:
+          "Recibimos varios envíos. Esperá un momento e intentá de nuevo.",
       });
     }
 

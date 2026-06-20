@@ -64,8 +64,8 @@ export const Contacto = component$<ContactoProps>(({ action, content }) => {
     <Section id="contacto" tone="primary">
       <Container class="grid gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Columna de info */}
-        <div>
-          <p class="text-accent-300 text-sm font-semibold tracking-[0.14em] uppercase">
+        <div data-reveal="left">
+          <p class="bb-eyebrow text-accent-300 text-sm font-semibold tracking-[0.14em] uppercase">
             {orDefault(content?.eyebrow, "Sumate a BioBal")}
           </p>
           <h2 class="font-display mt-4 text-3xl leading-tight font-semibold text-white sm:text-4xl">
@@ -114,7 +114,10 @@ export const Contacto = component$<ContactoProps>(({ action, content }) => {
         </div>
 
         {/* Formulario */}
-        <div class="shadow-primary-950/40 rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+        <div
+          data-reveal="right"
+          class="shadow-primary-950/40 rounded-3xl bg-white p-6 shadow-2xl sm:p-8"
+        >
           {v?.success ? (
             <div class="flex h-full flex-col items-center justify-center py-10 text-center">
               <span class="bg-success-soft text-success inline-flex h-16 w-16 items-center justify-center rounded-full">

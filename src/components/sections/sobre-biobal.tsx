@@ -29,7 +29,7 @@ export const SobreBioBal = component$<{ content?: SectionContent }>(
     return (
       <Section id="sobre" tone="white">
         <Container class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
-          <div class="order-2 lg:order-1">
+          <div class="order-2 lg:order-1" data-reveal="left">
             <ImagePlaceholder
               src={image}
               alt="Ambiente profesional y confortable dentro de las instalaciones de BioBal"
@@ -37,7 +37,7 @@ export const SobreBioBal = component$<{ content?: SectionContent }>(
             />
           </div>
 
-          <div class="order-1 lg:order-2">
+          <div class="order-1 lg:order-2" data-reveal="right">
             <SectionTitle eyebrow={eyebrow} title={title} />
             <p class="text-ink mt-5 text-base leading-relaxed sm:text-lg">
               {body}

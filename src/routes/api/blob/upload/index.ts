@@ -7,7 +7,12 @@ import { getSessionUserId } from "~/lib/auth";
  * (flujo client-upload del SDK). Permite archivos grandes sin pasar por el
  * límite de body de las funciones. Sólo para admins autenticados.
  */
-export const onPost: RequestHandler = async ({ request, json, env, cookie }) => {
+export const onPost: RequestHandler = async ({
+  request,
+  json,
+  env,
+  cookie,
+}) => {
   // El flujo del SDK hace dos POST: el primero (generación de token) lleva la
   // cookie de sesión; el segundo (onUploadCompleted, server-to-server) no. Por
   // eso exigimos la sesión sólo en onBeforeGenerateToken.
@@ -53,7 +58,8 @@ export const onPost: RequestHandler = async ({ request, json, env, cookie }) => 
     const msg = (error as Error).message;
     const status = msg === "No autorizado" ? 401 : 400;
     json(status, {
-      error: status === 401 ? "No autorizado" : "No se pudo procesar la subida.",
+      error:
+        status === 401 ? "No autorizado" : "No se pudo procesar la subida.",
     });
   }
 };

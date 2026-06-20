@@ -54,25 +54,32 @@ export const Infraestructura = component$<{ content?: SectionContent }>(
     return (
       <Section id="infraestructura" tone="white">
         <Container>
-          <SectionTitle
-            align="center"
-            eyebrow={orDefault(content?.eyebrow, "Infraestructura y servicios")}
-            title={orDefault(
-              content?.title,
-              "Todo lo que necesitás para desarrollar tu actividad",
-            )}
-            subtitle={orDefault(
-              content?.subtitle,
-              "Servicios e instalaciones pensados para que te enfoques en tu profesión y tus pacientes.",
-            )}
-          />
+          <div data-reveal>
+            <SectionTitle
+              align="center"
+              eyebrow={orDefault(
+                content?.eyebrow,
+                "Infraestructura y servicios",
+              )}
+              title={orDefault(
+                content?.title,
+                "Todo lo que necesitás para desarrollar tu actividad",
+              )}
+              subtitle={orDefault(
+                content?.subtitle,
+                "Servicios e instalaciones pensados para que te enfoques en tu profesión y tus pacientes.",
+              )}
+            />
+          </div>
 
           <ul class="mt-12 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {benefits.map(({ label, Icon, premium }) => (
+            {benefits.map(({ label, Icon, premium }, i) => (
               <li
                 key={label}
+                data-reveal
+                style={{ "--reveal-delay": `${(i % 6) * 60}ms` }}
                 class={[
-                  "flex items-center gap-4 rounded-2xl p-4 ring-1 transition-colors ring-inset",
+                  "flex items-center gap-4 rounded-2xl p-4 ring-1 transition-all ring-inset hover:-translate-y-0.5",
                   premium
                     ? "bg-accent-50 ring-accent-200"
                     : "bg-surface ring-line hover:ring-primary-200",

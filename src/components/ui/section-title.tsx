@@ -27,7 +27,8 @@ export const SectionTitle = component$<SectionTitleProps>(
         {eyebrow && (
           <p
             class={[
-              "mb-3 text-sm font-semibold tracking-[0.14em] uppercase",
+              "bb-eyebrow mb-3 text-sm font-semibold tracking-[0.14em] uppercase",
+              isCenter && "is-center w-full justify-center",
               isLight ? "text-accent-300" : "text-accent-600",
             ]}
           >

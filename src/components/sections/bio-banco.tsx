@@ -16,7 +16,10 @@ export const BioBanco = component$<{ content?: SectionContent }>(
     return (
       <Section id="bio-banco" tone="primary" class="overflow-hidden">
         <Container>
-          <div class="bg-primary-800/60 relative overflow-hidden rounded-3xl p-8 ring-1 ring-white/10 ring-inset sm:p-12 lg:p-16">
+          <div
+            data-reveal="scale"
+            class="bg-primary-800/60 relative overflow-hidden rounded-3xl p-8 ring-1 ring-white/10 ring-inset sm:p-12 lg:p-16"
+          >
             {/* Foto de laboratorio de fondo + gradiente para legibilidad */}
             <img
               src={image}
@@ -33,7 +36,7 @@ export const BioBanco = component$<{ content?: SectionContent }>(
             {/* Glow decorativo */}
             <div
               aria-hidden="true"
-              class="bg-accent-500/20 pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl"
+              class="bb-glow bg-accent-500/20 pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full blur-3xl"
             />
 
             <div class="relative grid gap-10 lg:grid-cols-[1.5fr_1fr] lg:items-center lg:gap-16">

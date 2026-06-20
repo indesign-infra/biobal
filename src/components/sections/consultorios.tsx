@@ -47,7 +47,7 @@ export const Consultorios = component$<{ content?: SectionContent }>(
       <Section id="consultorios" tone="surface">
         <Container>
           <div class="grid gap-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-            <div>
+            <div data-reveal="left">
               <SectionTitle
                 eyebrow={eyebrow}
                 title={title}
@@ -58,24 +58,31 @@ export const Consultorios = component$<{ content?: SectionContent }>(
                 <LuArrowRight class="h-5 w-5" />
               </Button>
             </div>
-            <ImagePlaceholder
-              alt="Consultorio profesional equipado en BioBal, con escritorio, sillas y luz natural"
-              src={image}
-              ratio="4 / 5"
-              width={1200}
-              height={1600}
-            />
+            <div data-reveal="right">
+              <ImagePlaceholder
+                alt="Consultorio profesional equipado en BioBal, con escritorio, sillas y luz natural"
+                src={image}
+                ratio="4 / 5"
+                width={1200}
+                height={1600}
+              />
+            </div>
           </div>
 
-          <p class="text-accent-600 mt-14 text-sm font-semibold tracking-[0.14em] uppercase">
+          <p
+            data-reveal
+            class="bb-eyebrow text-accent-600 mt-14 text-sm font-semibold tracking-[0.14em] uppercase"
+          >
             Destinado a
           </p>
           <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {destinatarios.map(({ label, Icon }) => (
+            {destinatarios.map(({ label, Icon }, i) => (
               <Card
                 key={label}
                 interactive
-                class="flex items-center gap-4 p-5 sm:p-5"
+                class="bb-card-glow flex items-center gap-4 p-5 sm:p-5"
+                data-reveal
+                style={{ "--reveal-delay": `${i * 60}ms` }}
               >
                 <span class="bg-accent-50 text-accent-600 ring-accent-100 inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset">
                   <Icon class="h-6 w-6" />
