@@ -42,7 +42,7 @@ export const Consultorios = component$<{ content?: SectionContent }>(
       content?.subtitle,
       "Consultorios en alquiler para distintas especialidades médicas y terapéuticas. Cada espacio está diseñado para ofrecer comodidad, privacidad y funcionalidad.",
     );
-    const image = orDefault(content?.imageUrl, "/images/consultorio.jpg");
+    const image = orDefault(content?.imageUrl, "/images/consultorio.webp");
     return (
       <Section id="consultorios" tone="surface">
         <Container>

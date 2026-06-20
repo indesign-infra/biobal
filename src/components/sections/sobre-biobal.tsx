@@ -24,7 +24,7 @@ export const SobreBioBal = component$<{ content?: SectionContent }>(
       content?.body,
       "Creemos que el entorno donde se desarrolla la atención médica influye directamente en la experiencia del profesional y del paciente. Por eso creamos un espacio que reúne tecnología, confort, accesibilidad y servicios complementarios, permitiendo que cada especialista se enfoque plenamente en su actividad.",
     );
-    const image = orDefault(content?.imageUrl, "/images/sala-biobal.png");
+    const image = orDefault(content?.imageUrl, "/images/sala-biobal.webp");
 
     return (
       <Section id="sobre" tone="white">

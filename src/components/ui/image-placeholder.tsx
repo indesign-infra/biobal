@@ -14,6 +14,12 @@ type ImagePlaceholderProps = {
   height?: number;
   /** El hero usa eager; el resto, lazy. */
   eager?: boolean;
+  /** Marca la imagen como LCP: prioriza su descarga (fetchpriority="high"). */
+  priority?: boolean;
+  /** `srcset` responsive (ej. variantes WebP). Solo aplica con `src` real. */
+  srcSet?: string;
+  /** `sizes` que acompaña al `srcSet`. */
+  sizes?: string;
   class?: string;
 };
 
@@ -33,6 +39,9 @@ export const ImagePlaceholder = component$<ImagePlaceholderProps>(
     width = 1200,
     height = 900,
     eager = false,
+    priority = false,
+    srcSet,
+    sizes,
     class: className,
   }) => {
     const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' width='${width}' height='${height}' viewBox='0 0 ${width} ${height}'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#dbe8f2'/><stop offset='0.55' stop-color='#eef2f7'/><stop offset='1' stop-color='#c6f2ee'/></linearGradient></defs><rect width='${width}' height='${height}' fill='url(#g)'/></svg>`;
@@ -49,10 +58,13 @@ export const ImagePlaceholder = component$<ImagePlaceholderProps>(
       >
         <img
           src={imgSrc}
+          srcset={src ? srcSet : undefined}
+          sizes={src ? sizes : undefined}
           alt={alt}
           width={width}
           height={height}
           loading={eager ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : undefined}
           decoding="async"
           class="h-full w-full object-cover"
         />

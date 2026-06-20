@@ -12,7 +12,7 @@ export const BioBanco = component$<{ content?: SectionContent }>(
       content?.body,
       "Dentro de las instalaciones de BioBal funciona Bio Banco de Tejidos, una unidad especializada que forma parte del ecosistema de servicios de salud de la institución. Su actividad se orienta a la gestión, procesamiento y conservación de tejidos bajo estrictos estándares de calidad, contribuyendo al desarrollo de soluciones innovadoras para el ámbito sanitario y reforzando el compromiso de BioBal con la excelencia y la innovación en salud.",
     );
-    const image = orDefault(content?.imageUrl, "/images/laboratorio.jpg");
+    const image = orDefault(content?.imageUrl, "/images/laboratorio.webp");
     return (
       <Section id="bio-banco" tone="primary" class="overflow-hidden">
         <Container>

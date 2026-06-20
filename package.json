@@ -26,6 +26,7 @@
     "db.studio": "drizzle-kit studio"
   },
   "devDependencies": {
+    "@builder.io/partytown": "^0.10.3",
     "@builder.io/qwik": "^1.20.0",
     "@builder.io/qwik-city": "^1.20.0",
     "@eslint/js": "^9",
@@ -38,6 +39,7 @@
     "globals": "16.4.0",
     "prettier": "3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "sharp": "^0.35.2",
     "tailwindcss": "^4.1.4",
     "typescript": "5.4.5",
     "typescript-eslint": "8.38.0",

@@ -19,7 +19,13 @@ export const Hero = component$<{ content?: SectionContent }>(({ content }) => {
     content?.body,
     "Espacio integral de salud en el complejo Small Center Las Piedras, Buenos Aires. Infraestructura de calidad, servicios especializados y espacios pensados para que los profesionales de la salud trabajen en las mejores condiciones.",
   );
-  const image = orDefault(content?.imageUrl, "/images/consultorio.jpg");
+  // Imagen LCP: por defecto la local (con variantes WebP responsive). Si el
+  // admin sube una propia (Vercel Blob), usamos esa sin srcset local.
+  const isDefaultImage = !content?.imageUrl;
+  const image = orDefault(content?.imageUrl, "/images/consultorio.webp");
+  const heroSrcSet = isDefaultImage
+    ? "/images/consultorio-640.webp 640w, /images/consultorio-960.webp 960w, /images/consultorio.webp 1200w"
+    : undefined;
 
   return (
     <section class="from-primary-950 via-primary-900 to-primary-800 relative overflow-hidden bg-linear-160">
@@ -90,10 +96,13 @@ export const Hero = component$<{ content?: SectionContent }>(({ content }) => {
             <ImagePlaceholder
               alt="Consultorio profesional de BioBal con amplio ventanal y vista al entorno verde, en Small Center Las Piedras"
               src={image}
+              srcSet={heroSrcSet}
+              sizes="(max-width: 1024px) 90vw, 42vw"
               ratio="4 / 5"
               width={1200}
               height={1600}
               eager
+              priority
               class="shadow-primary-950/40 shadow-2xl ring-white/10"
             />
           </div>

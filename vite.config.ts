@@ -9,6 +9,11 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import pkg from "./package.json";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "node:url";
+import { partytownVite } from "@builder.io/partytown/utils";
+import { join } from "node:path";
+
+// Carpeta raíz del proyecto en ESM (no hay __dirname).
+const rootDir = fileURLToPath(new URL(".", import.meta.url));
 type PkgDep = Record<string, string>;
 const { dependencies = {}, devDependencies = {} } = pkg as any as {
   dependencies: PkgDep;
@@ -38,6 +43,8 @@ export default defineConfig(({ command, mode }): UserConfig => {
       qwikVite(),
       tsconfigPaths({ root: "." }),
       tailwindcss(),
+      // Copia los archivos del worker de Partytown a dist/~partytown durante el build.
+      partytownVite({ dest: join(rootDir, "dist", "~partytown") }),
     ],
     resolve: !applyBrowserResolve
       ? undefined

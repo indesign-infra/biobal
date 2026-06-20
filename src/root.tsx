@@ -1,8 +1,24 @@
 import { component$, isDev } from "@builder.io/qwik";
 import { QwikCityProvider, RouterOutlet } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
+import { QwikPartytown } from "./components/partytown/partytown";
 
 import "./global.css";
+
+// ID de medición de GA4 (G-XXXXXXXXXX). Por defecto usa el ID del sitio, pero
+// se puede sobreescribir con la var de entorno pública PUBLIC_GA_ID (Vercel/.env).
+// Solo se carga en producción (ver gate `!isDev` abajo).
+const GA_ID =
+  (import.meta.env.PUBLIC_GA_ID as string | undefined) ?? "G-Y278KWG3W6";
+
+// Hoja de estilos de las fuentes (Google Fonts).
+const FONTS_HREF =
+  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap";
+
+// Carga la hoja de fuentes sin bloquear el primer render: se baja con
+// media="print" (no bloquea) y al terminar se activa con media="all".
+// Patrón estándar (Filament Group), tolerante a fallos.
+const fontFlipScript = `(function(){var l=document.getElementById('bb-fonts');if(!l)return;var on=function(){l.media='all';};if(l.sheet){on();}else{l.addEventListener('load',on);}})();`;
 
 /**
  * Reveal-on-scroll con un único IntersectionObserver, sin hidratación de Qwik.
@@ -32,10 +48,19 @@ export default component$(() => {
           href="https://fonts.gstatic.com"
           crossOrigin=""
         />
+        {/* Storage de las imágenes (Vercel Blob): adelantamos DNS+TLS para que
+            la imagen LCP del hero empiece a bajar antes. */}
         <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap"
+          rel="preconnect"
+          href="https://pu9e3rk9wbrecavn.public.blob.vercel-storage.com"
+          crossOrigin=""
         />
+        <link rel="preload" as="style" href={FONTS_HREF} />
+        <link id="bb-fonts" rel="stylesheet" href={FONTS_HREF} media="print" />
+        <noscript>
+          <link rel="stylesheet" href={FONTS_HREF} />
+        </noscript>
+        <script dangerouslySetInnerHTML={fontFlipScript} />
         {!isDev && (
           <link
             rel="manifest"
@@ -43,6 +68,25 @@ export default component$(() => {
           />
         )}
         <RouterHead />
+        {!isDev && GA_ID && (
+          <>
+            <QwikPartytown forward={["gtag", "dataLayer.push"]} />
+            <script
+              async
+              type="text/partytown"
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+            />
+            <script
+              type="text/partytown"
+              dangerouslySetInnerHTML={`
+                window.dataLayer = window.dataLayer || [];
+                window.gtag = function() { dataLayer.push(arguments); };
+                gtag('js', new Date());
+                gtag('config', '${GA_ID}');
+              `}
+            />
+          </>
+        )}
       </head>
       <body lang="es-AR">
         <RouterOutlet />

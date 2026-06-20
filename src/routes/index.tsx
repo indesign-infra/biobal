@@ -160,24 +160,53 @@ export default component$(() => {
 const description =
   "Espacio integral de salud y alquiler de consultorios profesionales en Small Center Las Piedras, Buenos Aires. Infraestructura de calidad y servicios pensados para profesionales de la salud.";
 
-export const head: DocumentHead = {
-  title:
-    "BioBal — Consultorios Profesionales | Espacio Integral de Salud, Las Piedras",
-  meta: [
-    { name: "description", content: description },
-    { property: "og:type", content: "website" },
-    {
-      property: "og:title",
-      content: "BioBal — Espacio Integral de Salud, Las Piedras",
-    },
-    { property: "og:description", content: description },
-    // TODO: imagen real — subir /og-image.jpg (1200×630) a /public
-    { property: "og:image", content: `${site.url}/og-image.jpg` },
-    { property: "og:url", content: site.url },
-    { property: "og:locale", content: "es_AR" },
-    { property: "og:site_name", content: site.name },
-    { name: "twitter:card", content: "summary_large_image" },
-    { name: "theme-color", content: "#0e2a47" },
-  ],
-  links: [{ rel: "canonical", href: site.url }],
+export const head: DocumentHead = ({ resolveValue }) => {
+  // Precargamos el recurso LCP (imagen del hero) para acelerar el primer paint.
+  // Si el admin subió una imagen propia (Blob), precargamos esa URL directa; si
+  // no, la default local con sus variantes WebP responsive.
+  const home = resolveValue(useHomeContent);
+  const heroImg = home?.sections?.["hero"]?.imageUrl;
+  const lcpPreload = heroImg
+    ? [
+        {
+          rel: "preload",
+          as: "image",
+          href: heroImg,
+          fetchpriority: "high",
+        },
+      ]
+    : [
+        {
+          rel: "preload",
+          as: "image",
+          href: "/images/consultorio.webp",
+          imagesrcset:
+            "/images/consultorio-640.webp 640w, /images/consultorio-960.webp 960w, /images/consultorio.webp 1200w",
+          imagesizes: "(max-width: 1024px) 90vw, 42vw",
+          fetchpriority: "high",
+        },
+      ];
+
+  return {
+    title:
+      "BioBal — Consultorios Profesionales | Espacio Integral de Salud, Las Piedras",
+    meta: [
+      { name: "description", content: description },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:title",
+        content: "BioBal — Espacio Integral de Salud, Las Piedras",
+      },
+      { property: "og:description", content: description },
+      { property: "og:image", content: `${site.url}/og-image.jpg` },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:url", content: site.url },
+      { property: "og:locale", content: "es_AR" },
+      { property: "og:site_name", content: site.name },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "theme-color", content: "#0e2a47" },
+    ],
+    links: [...lcpPreload, { rel: "canonical", href: site.url }],
+  };
 };
