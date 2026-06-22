@@ -16,6 +16,9 @@ const EXCLUDED_PREFIXES = ["/admin", "/api"];
 export const onGet: RequestHandler = (requestEvent) => {
   const publicRoutes = (routes as RouteData[])
     .map(([routeName]) => routeName)
+    // Las rutas de @qwik-city-plan vienen sin "/" inicial (ej. "admin/leads/"),
+    // salvo la home ("/"). Normalizamos para filtrar y construir URLs bien.
+    .map((route) => (route.startsWith("/") ? route : `/${route}`))
     .filter(
       (route) =>
         !route.includes("[") && // rutas dinámicas con parámetros

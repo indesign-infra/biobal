@@ -11,6 +11,9 @@ export default extendConfig(baseConfig, () => {
       },
       outDir: ".vercel/output/functions/_qwik-city.func",
     },
-    plugins: [vercelEdgeAdapter()],
+    // `ssg: null` desactiva la generación estática (y con ella el sitemap.xml
+    // vacío que el adapter creaba por defecto en modo "auto"). El sitio es 100%
+    // SSR y el sitemap lo sirve la ruta dinámica /sitemap.xml.
+    plugins: [vercelEdgeAdapter({ ssg: null })],
   };
 });
