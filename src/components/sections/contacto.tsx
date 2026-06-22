@@ -61,7 +61,7 @@ export const Contacto = component$<ContactoProps>(({ action, content }) => {
   ];
 
   return (
-    <Section id="contacto" tone="primary">
+    <Section id="contacto" tone="primary" glow fadeTopColor="var(--color-surface)">
       <Container class="grid gap-12 lg:grid-cols-2 lg:gap-16">
         {/* Columna de info */}
         <div data-reveal="left">

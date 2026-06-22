@@ -109,6 +109,43 @@ export const Infraestructura = component$<{ content?: SectionContent }>(
               </li>
             ))}
           </ul>
+
+          {/* Seguridad y habilitaciones */}
+          <div
+            data-reveal
+            class="bg-primary-50 ring-primary-100 mt-10 rounded-3xl p-6 ring-1 ring-inset sm:p-8"
+          >
+            <div class="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
+              <div class="sm:max-w-xs">
+                <span class="bg-primary-600 inline-flex h-12 w-12 items-center justify-center rounded-xl text-white">
+                  <LuShieldCheck class="h-6 w-6" />
+                </span>
+                <h3 class="font-display text-primary-900 mt-4 text-xl font-semibold">
+                  Seguridad y habilitaciones
+                </h3>
+                <p class="text-ink-soft mt-2 text-base leading-relaxed">
+                  Cumplimiento de las normas de seguridad y los controles
+                  correspondientes, para que trabajes con total tranquilidad.
+                </p>
+              </div>
+
+              <ul class="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2">
+                {[
+                  "Señalización de seguridad",
+                  "Plano de evacuación",
+                  "Sistema de protección contra incendios",
+                  "Controles y habilitaciones al día",
+                ].map((item) => (
+                  <li key={item} class="flex items-center gap-3">
+                    <LuCheckCircle2 class="text-primary-600 h-5 w-5 shrink-0" />
+                    <span class="text-ink-strong text-sm font-medium">
+                      {item}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </Container>
       </Section>
     );

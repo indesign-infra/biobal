@@ -59,6 +59,28 @@ export const SobreBioBal = component$<{ content?: SectionContent }>(
                 </li>
               ))}
             </ul>
+
+            {/* Misión y Visión */}
+            <div class="mt-8 grid gap-4 sm:grid-cols-2">
+              <div class="bg-surface ring-line rounded-2xl p-5 ring-1 ring-inset">
+                <h3 class="text-accent-600 text-xs font-semibold tracking-[0.14em] uppercase">
+                  Misión
+                </h3>
+                <p class="text-ink mt-2 text-base leading-relaxed">
+                  Facilitar el crecimiento profesional mediante espacios de
+                  atención de calidad.
+                </p>
+              </div>
+              <div class="bg-surface ring-line rounded-2xl p-5 ring-1 ring-inset">
+                <h3 class="text-accent-600 text-xs font-semibold tracking-[0.14em] uppercase">
+                  Visión
+                </h3>
+                <p class="text-ink mt-2 text-base leading-relaxed">
+                  Ser un centro de referencia en Zona Norte para profesionales
+                  de la salud.
+                </p>
+              </div>
+            </div>
           </div>
         </Container>
       </Section>

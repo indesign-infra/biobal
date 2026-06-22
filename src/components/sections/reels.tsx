@@ -18,7 +18,13 @@ export const Reels = component$<ReelsProps>(({ videos, content }) => {
   if (!videos || videos.length === 0) return null;
 
   return (
-    <Section id="reels" tone="primary" class="overflow-hidden">
+    <Section
+      id="reels"
+      tone="primary"
+      glow
+      fadeTopColor="var(--color-surface)"
+      fadeBottomColor="#ffffff"
+    >
       <Container>
         <div data-reveal>
           <SectionTitle

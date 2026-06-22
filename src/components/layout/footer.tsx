@@ -11,8 +11,27 @@ export const Footer = component$(() => {
   const s = useSiteSettings().value;
 
   return (
-    <footer class="bg-primary-950 text-primary-100">
-      <Container class="py-14 sm:py-16">
+    <footer class="bg-primary-950 text-primary-100 relative overflow-hidden">
+      {/* Imagen decorativa de fondo (ADN / laboratorio): textura sutil que
+          refuerza la identidad "Bio" sin restar legibilidad. Lazy: está al
+          final de la página. */}
+      <img
+        src="/images/laboratorio.webp"
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+        width={1600}
+        height={1067}
+        class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.35] select-none"
+      />
+      {/* Velo: oscurece para que el texto se lea siempre y difumina los bordes. */}
+      <div
+        aria-hidden="true"
+        class="from-primary-950 via-primary-950/45 to-primary-950 absolute inset-0 bg-linear-to-b"
+      />
+
+      <Container class="relative py-14 sm:py-16">
         <div class="grid gap-10 lg:grid-cols-[1.4fr_1fr_1.2fr]">
           {/* Marca + tagline */}
           <div>
