@@ -43,7 +43,7 @@ export default component$(() => {
       if (src.startsWith("data:") || src.startsWith("blob:")) {
         return src;
       }
-      return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+      return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=65`;
     }
   );
 

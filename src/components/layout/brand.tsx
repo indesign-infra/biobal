@@ -8,7 +8,7 @@ type BrandProps = {
 
 /**
  * Logotipo oficial de BioBal. Sobre fondo claro usa la versión color
- * (`/images/Logo.png`); sobre fondo oscuro, la misma marca en blanco.
+ * (`/images/Logo.webp`); sobre fondo oscuro, la misma marca en blanco.
  */
 export const Brand = component$<BrandProps>(
   ({ tone = "dark", class: className }) => {
