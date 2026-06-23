@@ -128,7 +128,7 @@ export const Footer = component$(() => {
 
         <div class="text-primary-200/60 mt-12 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm sm:flex-row sm:items-center sm:justify-between">
           <p>
-            © {year} {site.name}. TTodos los derechos reservados.
+            © {year} {site.name}. Todos los derechos reservados.
           </p>
           <p>{s.tagline} · Las Piedras, Buenos Aires</p>
         </div>
