@@ -50,6 +50,12 @@ const ReelCard = component$<{ video: ReelVideo; idx?: number }>(
     const isPlaying = useSignal(false);
     const isMuted = useSignal(true);
 
+    const posterUrl = video.thumbnailUrl
+      ? video.thumbnailUrl.startsWith("http")
+        ? `/_next/image?url=${encodeURIComponent(video.thumbnailUrl)}&w=320&q=75`
+        : video.thumbnailUrl
+      : undefined;
+
     const togglePlay = $(() => {
       const el = ref.value;
       if (!el) return;
@@ -80,7 +86,7 @@ const ReelCard = component$<{ video: ReelVideo; idx?: number }>(
           <video
             ref={ref}
             src={video.videoUrl}
-            poster={video.thumbnailUrl || undefined}
+            poster={posterUrl}
             preload="none"
             class="h-full w-full object-cover"
             playsInline

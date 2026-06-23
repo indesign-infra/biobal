@@ -15,8 +15,8 @@ export const Brand = component$<BrandProps>(
     const isLight = tone === "light";
     return (
       <img
-        // fondo claro: logo color (con fondo blanco). fondo oscuro: versión vectorial transparente, en blanco.
-        src={isLight ? "/brand/biobal-horizontal.svg" : "/images/Logo.png"}
+        // eslint-disable-next-line qwik/jsx-img
+        src="/brand/biobal-horizontal.svg"
         alt="BioBal — Espacio Integral de Salud"
         width={310}
         height={102}
