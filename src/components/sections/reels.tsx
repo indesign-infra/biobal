@@ -81,7 +81,7 @@ const ReelCard = component$<{ video: ReelVideo; idx?: number }>(
             ref={ref}
             src={video.videoUrl}
             poster={video.thumbnailUrl || undefined}
-            preload="metadata"
+            preload="none"
             class="h-full w-full object-cover"
             playsInline
             loop
