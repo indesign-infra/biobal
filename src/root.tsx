@@ -1,7 +1,8 @@
-import { component$, isDev } from "@builder.io/qwik";
+import { $, component$, isDev } from "@builder.io/qwik";
 import { QwikCityProvider, RouterOutlet } from "@builder.io/qwik-city";
 import { RouterHead } from "./components/router-head/router-head";
 import { QwikPartytown } from "./components/partytown/partytown";
+import { useImageProvider, type ImageTransformerProps } from "qwik-image";
 
 import "./global.css";
 
@@ -36,6 +37,20 @@ export default component$(() => {
    *
    * Don't remove the `<head>` and `<body>` elements.
    */
+
+  const imageTransformer$ = $(
+    ({ src, width }: ImageTransformerProps): string => {
+      if (src.startsWith("data:") || src.startsWith("blob:")) {
+        return src;
+      }
+      return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+    }
+  );
+
+  useImageProvider({
+    resolutions: [320, 420, 640, 750, 828, 1080, 1200],
+    imageTransformer$,
+  });
 
   return (
     <QwikCityProvider>

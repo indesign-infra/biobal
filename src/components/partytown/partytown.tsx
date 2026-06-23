@@ -1,16 +1,19 @@
-import { component$ } from "@builder.io/qwik";
-import {
-  partytownSnippet,
-  type PartytownConfig,
-} from "@builder.io/partytown/integration";
+import type { PartytownConfig } from "@qwik.dev/partytown/integration";
+import { partytownSnippet } from "@qwik.dev/partytown/integration";
 
+/**
+ * Props for `<QwikPartytown/>`, which extends the Partytown Config.
+ *
+ * https://github.com/BuilderIO/partytown#config
+ *
+ * @public
+ */
 export type PartytownProps = PartytownConfig;
 
 /**
- * Inyecta el snippet de inicialización de Partytown.
- * Las funciones listadas en `forward` (ej: 'gtag', 'dataLayer.push') se
- * reenvían desde el hilo principal al Web Worker donde corre gtag.js.
+ * @public
+ * You can pass setting with props
  */
-export const QwikPartytown = component$((props: PartytownProps) => {
+export const QwikPartytown = (props: PartytownProps): any => {
   return <script dangerouslySetInnerHTML={partytownSnippet(props)} />;
-});
+};

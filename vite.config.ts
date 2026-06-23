@@ -9,9 +9,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import pkg from "./package.json";
 import tailwindcss from "@tailwindcss/vite";
 import { fileURLToPath } from "node:url";
-import { partytownVite } from "@builder.io/partytown/utils";
+import { partytownVite } from "@qwik.dev/partytown/utils";
 import { join } from "node:path";
-
 // Carpeta raíz del proyecto en ESM (no hay __dirname).
 const rootDir = fileURLToPath(new URL(".", import.meta.url));
 type PkgDep = Record<string, string>;
@@ -24,14 +23,15 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
 /**
  * Note that Vite normally starts from `index.html` but the qwikCity plugin makes start at `src/entry.ssr.tsx` instead.
  */
-
 // El build del servidor (adapter Vercel Edge) setea VITE_SSR_BUILD=1. En el
 // build de cliente (browser) NO está, así que aplicamos los shims de @vercel/blob
 // para evitar que se bundlee el crypto/undici de Node (que usa util.promisify y
 // rompe en el navegador). En el server se usan los módulos reales.
 const isServerBuild = process.env.VITE_SSR_BUILD === "1";
 const blobShim = (file: string) =>
-  fileURLToPath(new URL(`node_modules/@vercel/blob/dist/${file}`, import.meta.url));
+  fileURLToPath(
+    new URL(`node_modules/@vercel/blob/dist/${file}`, import.meta.url),
+  );
 
 export default defineConfig(({ command, mode }): UserConfig => {
   // Sólo en el build de producción de CLIENTE (no dev, no server) forzamos la

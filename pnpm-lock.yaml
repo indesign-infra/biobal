@@ -36,6 +36,9 @@ importers:
       '@eslint/js':
         specifier: ^9
         version: 9.39.4
+      '@qwik.dev/partytown':
+        specifier: ^0.11.1
+        version: 0.11.2
       '@qwikest/icons':
         specifier: ^0.0.13
         version: 0.0.13(@builder.io/qwik@1.20.0(vite@7.3.1(@types/node@20.19.0)(jiti@2.7.0)(less@4.6.6)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.62.0)(tsx@4.21.0)(yaml@2.9.0)))
@@ -63,6 +66,9 @@ importers:
       prettier-plugin-tailwindcss:
         specifier: ^0.6.11
         version: 0.6.14(prettier@3.6.2)
+      qwik-image:
+        specifier: 1.0.0
+        version: 1.0.0(@builder.io/qwik@1.20.0(vite@7.3.1(@types/node@20.19.0)(jiti@2.7.0)(less@4.6.6)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.62.0)(tsx@4.21.0)(yaml@2.9.0)))
       sharp:
         specifier: ^0.35.2
         version: 0.35.2
@@ -1543,6 +1549,11 @@ packages:
     resolution: {integrity: sha512-tmmZ3lQxAe/k/+rNnXQRawJ4NjxO2hqiOLTHvWchtGZULp4RyFeh6aU4XdOYBFe2KE1oShQTv4AblOs2iOrNnQ==}
     engines: {node: '>= 10.0.0'}
 
+  '@qwik.dev/partytown@0.11.2':
+    resolution: {integrity: sha512-795y49CqBiKiwKAD+QBZlzlqEK275hVcazZ7wBPSfgC23L+vWuA7PJmMpgxojOucZHzYi5rAAQ+IP1I3BKVZxw==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   '@qwikest/icons@0.0.13':
     resolution: {integrity: sha512-e0wY8vmx0nDSUiuCATlk+ojTvdBV4txIGHHWjZW5SRkv4XB8H9+3WSDcLPz0ItUdRyzcrohE9k2jtQI/98aRPA==}
     engines: {node: '>=15.0.0'}
@@ -2523,6 +2534,10 @@ packages:
 
   domutils@3.2.2:
     resolution: {integrity: sha512-6kZKyUajlDuqlHKVX1w7gyslj9MPIXzIFiz/rGu35uC1wMi+kMhQwGhl4lt9unC9Vb9INnY9Z3/ZA3+FhASLaw==}
+
+  dotenv@16.6.1:
+    resolution: {integrity: sha512-uBq4egWHTcTt33a72vpSG0z3HnPuIl6NqYcTrKEg2azoEyl2hpW0zqlxysq2pK9HlDIHyHyakeYaYnSAwd8bow==}
+    engines: {node: '>=12'}
 
   drizzle-kit@0.31.10:
     resolution: {integrity: sha512-7OZcmQUrdGI+DUNNsKBn1aW8qSoKuTH7d0mYgSP8bAzdFzKoovxEFnoGQp2dVs82EOJeYycqRtciopszwUf8bw==}
@@ -3936,6 +3951,11 @@ packages:
 
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
+
+  qwik-image@1.0.0:
+    resolution: {integrity: sha512-H4jIQFAQL0C8fR+RoelKGnHkw09k65p+vJZMXLiH+UGcEsib/ubA7MZiwpxlWJFe7Px/2FwTOKN6gKVza+a4bQ==}
+    peerDependencies:
+      '@builder.io/qwik': ^1.14.1 || ^2.0.0
 
   raw-body@2.4.1:
     resolution: {integrity: sha512-9WmIKF6mkvA0SLmA2Knm9+qj89e+j1zqgyn8aXGd7+nAduPoqgI9lO57SAZNn/Byzo5P7JhXTyg9PzaJbH73bA==}
@@ -5566,6 +5586,10 @@ snapshots:
       '@parcel/watcher-win32-x64': 2.5.6
     optional: true
 
+  '@qwik.dev/partytown@0.11.2':
+    dependencies:
+      dotenv: 16.6.1
+
   '@qwikest/icons@0.0.13(@builder.io/qwik@1.20.0(vite@7.3.1(@types/node@20.19.0)(jiti@2.7.0)(less@4.6.6)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.62.0)(tsx@4.21.0)(yaml@2.9.0)))':
     dependencies:
       '@builder.io/qwik': 1.20.0(vite@7.3.1(@types/node@20.19.0)(jiti@2.7.0)(less@4.6.6)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.62.0)(tsx@4.21.0)(yaml@2.9.0))
@@ -6645,6 +6669,8 @@ snapshots:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
+
+  dotenv@16.6.1: {}
 
   drizzle-kit@0.31.10:
     dependencies:
@@ -8336,6 +8362,10 @@ snapshots:
   punycode@2.3.1: {}
 
   queue-microtask@1.2.3: {}
+
+  qwik-image@1.0.0(@builder.io/qwik@1.20.0(vite@7.3.1(@types/node@20.19.0)(jiti@2.7.0)(less@4.6.6)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.62.0)(tsx@4.21.0)(yaml@2.9.0))):
+    dependencies:
+      '@builder.io/qwik': 1.20.0(vite@7.3.1(@types/node@20.19.0)(jiti@2.7.0)(less@4.6.6)(lightningcss@1.32.0)(sass@1.101.0)(stylus@0.62.0)(tsx@4.21.0)(yaml@2.9.0))
 
   raw-body@2.4.1:
     dependencies:
