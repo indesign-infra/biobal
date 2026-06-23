@@ -1,3 +1,4 @@
+/* eslint-disable qwik/jsx-img -- logo SVG de marca desde public/, compartido con brand.tsx */
 import { component$ } from "@builder.io/qwik";
 import { routeAction$, zod$, z, Link, Form } from "@builder.io/qwik-city";
 import type { DocumentHead } from "@builder.io/qwik-city";

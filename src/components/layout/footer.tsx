@@ -1,3 +1,4 @@
+/* eslint-disable qwik/jsx-img -- imagen decorativa local de public/, ya optimizada a WebP; ?jsx no aplica a backgrounds */
 import { component$ } from "@builder.io/qwik";
 import { LuMapPin, LuPhone, LuInstagram, LuGlobe } from "@qwikest/icons/lucide";
 import { Container } from "../ui/container";

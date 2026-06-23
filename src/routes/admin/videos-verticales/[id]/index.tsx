@@ -301,6 +301,8 @@ export default component$(() => {
                 <img
                   src={thumbPreview.value}
                   alt="Vista previa"
+                  width={360}
+                  height={640}
                   class="h-full w-full object-cover"
                 />
               </div>

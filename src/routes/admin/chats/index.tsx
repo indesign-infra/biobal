@@ -291,16 +291,22 @@ export default component$(() => {
                         >
                           Ver <LuArrowRight class="h-3.5 w-3.5" />
                         </Link>
-                        <Form action={del}>
-                          <input type="hidden" name="id" value={sess.id} />
-                          <button
-                            type="submit"
-                            class="text-slate-400 transition-colors hover:text-red-500"
-                            title="Eliminar"
-                          >
-                            <LuTrash2 class="h-4 w-4" />
-                          </button>
-                        </Form>
+                        <button
+                          type="button"
+                          onClick$={async () => {
+                            if (
+                              window.confirm(
+                                "¿Estás seguro de que querés eliminar esta conversación?",
+                              )
+                            ) {
+                              await del.submit({ id: sess.id });
+                            }
+                          }}
+                          class="text-slate-400 transition-colors hover:text-red-500"
+                          title="Eliminar"
+                        >
+                          <LuTrash2 class="h-4 w-4" />
+                        </button>
                       </div>
                     </td>
                   </tr>

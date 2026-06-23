@@ -141,16 +141,22 @@ export default component$(() => {
                     {l.createdAt}
                   </td>
                   <td class="px-5 py-4 text-right">
-                    <Form action={deleteLead}>
-                      <input type="hidden" name="id" value={l.id} />
-                      <button
-                        type="submit"
-                        title="Eliminar"
-                        class="text-slate-400 transition-colors hover:text-red-500"
-                      >
-                        <LuTrash2 class="h-4 w-4" />
-                      </button>
-                    </Form>
+                    <button
+                      type="button"
+                      onClick$={async () => {
+                        if (
+                          window.confirm(
+                            "¿Estás seguro de que querés eliminar este lead?",
+                          )
+                        ) {
+                          await deleteLead.submit({ id: l.id });
+                        }
+                      }}
+                      title="Eliminar"
+                      class="text-slate-400 transition-colors hover:text-red-500"
+                    >
+                      <LuTrash2 class="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
               ))}

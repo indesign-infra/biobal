@@ -128,6 +128,8 @@ export const GalleryUploader = component$<Props>(({ images }) => {
                 src={img.imageUrl}
                 alt=""
                 loading="lazy"
+                width={600}
+                height={600}
                 class="pointer-events-none h-full w-full object-cover"
               />
               <div class="absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-lg bg-black/55 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">

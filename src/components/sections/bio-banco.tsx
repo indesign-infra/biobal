@@ -27,6 +27,8 @@ export const BioBanco = component$<{ content?: SectionContent }>(
               aria-hidden="true"
               loading="lazy"
               decoding="async"
+              width={1600}
+              height={1067}
               class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-30"
             />
             <div

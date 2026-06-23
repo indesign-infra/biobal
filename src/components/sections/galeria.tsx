@@ -107,6 +107,8 @@ export const Galeria = component$<GaleriaProps>(({ photos, content }) => {
                 alt={photo.title || "Instalaciones de BioBal"}
                 loading="lazy"
                 decoding="async"
+                width={800}
+                height={1000}
                 class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
               />
 
@@ -200,6 +202,9 @@ export const Galeria = component$<GaleriaProps>(({ photos, content }) => {
             class="animate-fade-in flex w-full max-w-5xl flex-col items-center gap-4"
             onClick$={(e) => e.stopPropagation()}
           >
+            {/* Visor de aspecto variable (object-contain): no se le fija
+                width/height para no deformar imágenes apaisadas o verticales. */}
+            {/* eslint-disable-next-line qwik/jsx-img */}
             <img
               src={currentImage.imageUrl}
               alt={currentImage.title || "Instalaciones de BioBal"}

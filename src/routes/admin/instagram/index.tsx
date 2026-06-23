@@ -147,6 +147,8 @@ export default component$(() => {
                 src={p.mediaUrl}
                 alt={p.caption || "Post"}
                 loading="lazy"
+                width={600}
+                height={600}
                 class="h-full w-full object-cover"
               />
               <div class="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">

@@ -60,6 +60,8 @@ export const InstagramFeed = component$<InstagramFeedProps>(
                   alt={post.caption || "Publicación de BioBal en Instagram"}
                   loading="lazy"
                   decoding="async"
+                  width={600}
+                  height={600}
                   class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
                 <div class="absolute inset-0 flex items-center justify-center bg-black/55 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
