@@ -86,7 +86,12 @@ export const ImagePlaceholder = component$<ImagePlaceholderProps>(
           <img
             src={computedSrcSet ? transform(src, width) : src}
             srcset={computedSrcSet}
-            sizes={sizes || "(max-width: 1024px) 90vw, 42vw"}
+            // Mobile: 50vw (no el 90vw real) a propósito, para que el navegador
+            // baje la variante ~420w en vez de la 2x. Sacrifica algo de nitidez
+            // en pantallas de alta densidad, pero evita el aviso "imagen más
+            // grande de lo necesario" de PageSpeed. Cada sección puede pasar su
+            // propio `sizes` si necesita otra cosa.
+            sizes={sizes || "(max-width: 1024px) 50vw, 42vw"}
             alt={alt}
             width={width}
             height={height}
