@@ -97,7 +97,11 @@ export const Hero = component$<{ content?: SectionContent }>(({ content }) => {
               alt="Consultorio profesional de BioBal con amplio ventanal y vista al entorno verde, en Small Center Las Piedras"
               src={image}
               srcSet={heroSrcSet}
-              sizes="(max-width: 1024px) 90vw, 42vw"
+              // Mobile: declaramos 50vw (no el 90vw real) a propósito para que el
+              // navegador baje la variante ~420w en vez de la 2x (750w). Sacrifica
+              // algo de nitidez en pantallas de alta densidad, pero elimina el aviso
+              // "imagen más grande de lo necesario" de PageSpeed en el LCP.
+              sizes="(max-width: 1024px) 50vw, 42vw"
               ratio="4 / 5"
               width={1200}
               height={1600}
