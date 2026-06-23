@@ -1,6 +1,25 @@
 import { component$ } from "@builder.io/qwik";
 import { LuImage } from "@qwikest/icons/lucide";
-import { Image } from "qwik-image";
+
+/** Mismas resoluciones que el provider de qwik-image en root.tsx. */
+const RESOLUTIONS = [320, 420, 640, 750, 828, 1080, 1200];
+
+/** Replica el `imageTransformer$` de root.tsx (Vercel Image Optimization). */
+const transform = (src: string, width: number): string =>
+  src.startsWith("data:") || src.startsWith("blob:")
+    ? src
+    : `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=65`;
+
+/**
+ * Genera un `srcset` responsive para `src`. Devuelve `undefined` cuando la
+ * imagen no es optimizable (data:/blob:) y debe servirse tal cual.
+ */
+const buildSrcSet = (src: string, maxWidth: number): string | undefined => {
+  if (src.startsWith("data:") || src.startsWith("blob:")) return undefined;
+  const widths = RESOLUTIONS.filter((w) => w <= maxWidth);
+  if (!widths.includes(maxWidth)) widths.push(maxWidth);
+  return widths.map((w) => `${transform(src, w)} ${w}w`).join(", ");
+};
 
 type ImagePlaceholderProps = {
   /** Texto alternativo real de la imagen final (importante para accesibilidad/SEO). */
@@ -41,6 +60,7 @@ export const ImagePlaceholder = component$<ImagePlaceholderProps>(
     height = 900,
     eager = false,
     priority = false,
+    srcSet,
     sizes,
     class: className,
   }) => {
@@ -49,6 +69,12 @@ export const ImagePlaceholder = component$<ImagePlaceholderProps>(
       src ?? `data:image/svg+xml,${encodeURIComponent(placeholderSvg)}`;
 
     if (src) {
+      // Usamos un <img> nativo en vez del <Image> de qwik-image (1.0.0) porque
+      // este ignora `sizes`/`srcSet` y siempre fuerza `sizes="...100vw"`, lo que
+      // hace que el navegador baje variantes más grandes de lo necesario.
+      // `srcSet` propio (variantes estáticas) tiene prioridad; si no, se genera
+      // con el mismo transformador (Vercel Image) que usa el resto del sitio.
+      const computedSrcSet = srcSet ?? buildSrcSet(src, width);
       return (
         <figure
           class={[
@@ -57,15 +83,16 @@ export const ImagePlaceholder = component$<ImagePlaceholderProps>(
           ]}
           style={{ aspectRatio: ratio }}
         >
-          <Image
-            src={src}
+          <img
+            src={computedSrcSet ? transform(src, width) : src}
+            srcset={computedSrcSet}
+            sizes={sizes || "(max-width: 1024px) 90vw, 42vw"}
             alt={alt}
             width={width}
             height={height}
-            layout="constrained"
-            sizes={sizes || "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 650px"}
             loading={priority ? "eager" : "lazy"}
-            fetchpriority={priority ? "high" : undefined}
+            fetchPriority={priority ? "high" : undefined}
+            decoding="async"
             class="h-full w-full object-cover"
           />
         </figure>

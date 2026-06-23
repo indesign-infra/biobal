@@ -24,7 +24,7 @@ export const Hero = component$<{ content?: SectionContent }>(({ content }) => {
   const isDefaultImage = !content?.imageUrl;
   const image = orDefault(content?.imageUrl, "/images/consultorio.webp");
   const heroSrcSet = isDefaultImage
-    ? "/images/consultorio-640.webp 640w, /images/consultorio-960.webp 960w, /images/consultorio.webp 1200w"
+    ? "/images/consultorio-640.webp 640w, /images/consultorio-768.webp 768w, /images/consultorio-960.webp 960w, /images/consultorio.webp 1200w"
     : undefined;
 
   return (
