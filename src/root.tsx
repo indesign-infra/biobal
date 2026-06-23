@@ -82,7 +82,15 @@ export default component$(() => {
                 window.dataLayer = window.dataLayer || [];
                 window.gtag = function() { dataLayer.push(arguments); };
                 gtag('js', new Date());
-                gtag('config', '${GA_ID}');
+                // Desactivamos las funciones de publicidad (Google Signals /
+                // personalización de anuncios). No las usamos —es un sitio de
+                // leads, no corre Google Ads— y son las que hacen que gtag.js
+                // invoque las APIs deprecadas Shared Storage y Attribution
+                // Reporting (las advertencias de "API obsoletas" en PageSpeed).
+                gtag('config', '${GA_ID}', {
+                  allow_google_signals: false,
+                  allow_ad_personalization_signals: false
+                });
               `}
             />
           </>
