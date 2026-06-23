@@ -98,10 +98,12 @@ export default component$(() => {
                 window.gtag = function() { dataLayer.push(arguments); };
                 gtag('js', new Date());
                 // Desactivamos las funciones de publicidad (Google Signals /
-                // personalización de anuncios). No las usamos —es un sitio de
-                // leads, no corre Google Ads— y son las que hacen que gtag.js
-                // invoque las APIs deprecadas Shared Storage y Attribution
-                // Reporting (las advertencias de "API obsoletas" en PageSpeed).
+                // personalización de anuncios): no las usamos —es un sitio de
+                // leads, no corre Google Ads— y reducen los datos que se envían
+                // a Google. (Ojo: NO suprimen las advertencias de "API obsoletas"
+                // Shared Storage / Attribution Reporting; esas las dispara gtag.js
+                // al feature-detectar Privacy Sandbox y se bloquean vía el header
+                // Permissions-Policy en vercel.json.)
                 gtag('config', '${GA_ID}', {
                   allow_google_signals: false,
                   allow_ad_personalization_signals: false
