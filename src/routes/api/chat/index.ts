@@ -46,14 +46,6 @@ function getFallback(userMessage: string): string {
     return "🩺 Los consultorios de BioBal son ideales para múltiples especialidades: odontología, psicología, kinesiología, ginecología, clínica médica, nutrición, cardiología, pediatría, fonoaudiología y más. Cada espacio se adapta a tu actividad.";
   }
   if (
-    t.includes("bio banco") ||
-    t.includes("biobanco") ||
-    t.includes("tejido") ||
-    t.includes("aloinjerto")
-  ) {
-    return "🔬 Dentro de BioBal funciona el Bio Banco de Tejidos, una unidad especializada en gestión, procesamiento y conservación de tejidos bajo estrictos estándares de calidad. Si necesitás información específica, dejanos tu consulta y te contactamos.";
-  }
-  if (
     t.includes("ubicac") ||
     t.includes("direccion") ||
     t.includes("dirección") ||
@@ -88,7 +80,6 @@ function getFallback(userMessage: string): string {
     "🤖 Puedo ayudarte con información sobre BioBal. Contame si te interesa:\n\n" +
     "• 🏢 Alquiler de *consultorios* (módulos, día o mes)\n" +
     "• 🩺 *Especialidades* que pueden atender\n" +
-    "• 🔬 El *Bio Banco de Tejidos*\n" +
     "• 📍 *Ubicación* y accesos\n" +
     "• 📞 Cómo *coordinar una visita*"
   );
@@ -201,7 +192,6 @@ ${
 - Alquila consultorios profesionales modernos, climatizados y luminosos, por módulo de 4 hs, por día o por mes, adaptables a cada especialidad.
 - Servicios: sala de espera, Wi-Fi, luz natural, aire acondicionado central, estacionamiento gratuito, seguridad y limpieza.
 - Especialidades: odontología, psicología, kinesiología, ginecología, clínica médica, nutrición, cardiología, pediatría, fonoaudiología y más.
-- Dentro de BioBal funciona el Bio Banco de Tejidos, unidad especializada en gestión, procesamiento y conservación de tejidos.
 - Referente: Lic. Mónica Álvarez (Bióloga).`
 }
 

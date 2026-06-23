@@ -25,15 +25,6 @@ export const site = {
   referente: "Lic. Mónica Álvarez — Bióloga",
 } as const;
 
-/** Enlaces de navegación ancla del header. */
-export const navLinks = [
-  { label: "Sobre BioBal", href: "#sobre" },
-  { label: "Bio Banco", href: "#bio-banco" },
-  { label: "Consultorios", href: "#consultorios" },
-  { label: "Infraestructura", href: "#infraestructura" },
-  { label: "Por qué BioBal", href: "#por-que" },
-] as const;
-
 /**
  * Especialidades para el `select` del formulario. La última opción ("Otra")
  * cubre cualquier caso no listado.
